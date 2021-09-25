@@ -18,6 +18,8 @@ classdef SimFunc
             
             t1 = tic;
             
+            
+            
             % check if there is no Sources in model and find the leftmost block
             subsystems = find_system(model,'BlockType','SubSystem');
             if ~isempty(subsystems)
@@ -156,10 +158,6 @@ classdef SimFunc
                 switch params{index,1}
                    case 'phases'
                        phases = params{index,2};
-                   case 'ts_1'
-                       ts1 = params{index,2};
-                   case 'ts_2'
-                       ts2 = params{index,2};
                    case 'Ron'
                        set_param(fault_handle, 'FaultResistance', string(params{index,2}))
                    case 'Rg'
@@ -172,9 +170,8 @@ classdef SimFunc
                        unknown = [unknown, params{index,2}]; %#ok<AGROW>
                 end
             end
-
-            set_param(fault_handle, 'SwitchTimes', mat2str([ts1, ts2]))
-
+            
+            set_param(fault_handle, 'SwitchTimes', '[0.1 0.2]')
 
             % warning for unknown parameters
             if ~isempty(unknown) 
@@ -223,11 +220,23 @@ classdef SimFunc
         %   scopes[array of struct] - data received from scopes after simulation
 
 
-            % run simulink
-            t1 = tic;
             
+            t1 = tic;
             fprintf(2, '\nSTARTED COMPUTATION of %s.slx\n', model)
-            sim(model); 
+            
+            % get and set parameters of simulink configurations
+            conf = getActiveConfigSet(model);
+            
+            % calculating 2 points:
+            % 0.0 - normal state
+            % 0.2 - fault state (if fault was added) or repeat normal state
+            
+            set_param(conf, 'SolverType', 'Fixed-step');
+            set_param(conf, 'FixedStep', '0.2');
+            set_param(conf, 'StartTime', '0.0');
+            set_param(conf, 'StopTime', '0.2');
+            
+            simOut = sim(model, conf); 
             
             if SimFunc.show_time
                 fprintf('\nSimulation computed in %f sec\n', toc(t1))
@@ -239,7 +248,7 @@ classdef SimFunc
             scopes = [];
             for index = 1:length(scopes_name)
                 scope_ws_name = get_param(scopes_name{index}, 'DataLoggingVariableName');
-                scopes = [scopes, eval(scope_ws_name)]; %#ok<AGROW>
+                scopes = [scopes, get(simOut, scope_ws_name)]; %#ok<AGROW>
             end
 
 

@@ -5,20 +5,18 @@ close all
 t_total = tic;
 
 
-% Definition simulink model
+% Definition and load simulink model
 model = 'GridN1'; 
+
+load_system(['models/',model])
 
 % Fault parameters
 parameters = {  'phases', 'CG';...
-                'ts_1', 0.1;...
-                'ts_2', 0.2;...
                 'Ron', 1;...
                 'Rg', 1;...
                 'Rs', 1;...
                 'Cs', inf  };
 
-% load simulink model
-load_system(model)
             
 try 
     SimFunc.AddSource(model)     
@@ -47,8 +45,8 @@ SimFunc.DeleteFault(model, 'Fault')
 
 
 % close simulink model
-save_system(model)
-close_system(model)
+save_system(['models/',model])
+close_system(['models/',model])
 
 fprintf('\nTotal work time %f sec\n', toc(t_total)) 
 
