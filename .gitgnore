@@ -1,3 +1,10 @@
-slprj/
 
-.slxc
+
+slprj/
+sccprj/
+
+
+*.slxc
+*.autosave
+*.asv
+
