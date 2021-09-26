@@ -1,5 +1,5 @@
 # Machine Learning simulations analysis
-### project for final qualifying work of a bachelor in *SPb university* of student *Burlak Alexey*
+### Project for final qualifying work of a bachelor in *SPb university* of student *Burlak Alexey*
 # Architecture of project
 
 - *models/* - folder with simulink models, made in special converter
