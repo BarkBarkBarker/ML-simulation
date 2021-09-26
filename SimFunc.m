@@ -369,8 +369,10 @@ classdef SimFunc
                 
                 % check if this data wasn't written already (by id)
                 try %#ok<TRYNC>
-                    if contains([data(:).id], unique_name_scope) && SimFunc.show_warnings
-                        warning('This data already saved')
+                    if contains([data(:).id], unique_name_scope)
+                        if SimFunc.show_warnings
+                            warning('This data already saved')
+                        end
                         return
                     end
                 end

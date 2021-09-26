@@ -58,7 +58,7 @@ for model = ["GridN2", "GridN3", "GridN1", "GridN4"]
                     % show info about current computation
                     if SimFunc.show_info_bar
                         clc
-                        fprintf('\n Current porgress is %g/%g',flag, 4*length(blocks)*N^2*length(combinations))
+                        fprintf('Current porgress is %g/%g\n',flag, 4*length(blocks)*N^2*length(combinations))
                         fprintf('\nWorking on %s with fault on %s with parameters:\n', model, blocks{block_index})
                         disp(parameters)
                         
