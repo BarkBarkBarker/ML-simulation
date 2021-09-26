@@ -11,12 +11,12 @@ model = 'GridN1';
 load_system(['models/',model])
 
 % Fault parameters
-parameters = {  'phases', 'CG';...
-                'Ron', 1;...
-                'Rg', 1;...
-                'Rs', 1;...
-                'Cs', inf  };
-
+parameters = {  'phases', 'CG';... % common fault (A/B/C) - G, also double faul
+                'Ron', 1;... % range=1e-9 ... 10
+                'Rg', 1;... % range=1e-9 ... 10
+                'Rs', 1;... % adjusts to the stability of the solution 
+                'Cs', inf;... % adjusts to the stability of the solution 
+                'FaultIn', 'R1'  }; % block where fault
             
 try 
     SimFunc.AddSource(model)     
@@ -33,11 +33,14 @@ SimFunc.SetUpFault(fault, parameters)
 
 % Run simulation and collect data from scopes
 
-data = SimFunc.RunSim(model);
+raw_data = SimFunc.RunSim(model);
+
+% Save data in .mat file
+SimFunc.ExportData(model, parameters, raw_data, 'data.mat')
 
 % Draw plots of phasors from scope#2 at t=0.5
 
-SimFunc.DrawPhasor(data(2), 0.5)
+SimFunc.DrawPhasor(raw_data(2), 0.5)
 
 
 % Delete created Fault block
@@ -49,7 +52,3 @@ save_system(['models/',model])
 close_system(['models/',model])
 
 fprintf('\nTotal work time %f sec\n', toc(t_total)) 
-
-
-
-% && contains([get_param(connect_handle,'PortConnectivity').Type], 'LConn1LConn2LConn3')

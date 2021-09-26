@@ -4,7 +4,10 @@ classdef SimFunc
     
     
     properties(Constant)
-       show_time = true; 
+       show_time = false; 
+       show_warnings = false;
+       show_messages = false;
+       show_info_bar = true;
     end
     
     methods(Static)
@@ -14,11 +17,8 @@ classdef SimFunc
         % (note in directory should be 'source.slx' with source blocks
         % Parameters:
         %   model [string/char] - name of simulink model without file format
-
             
             t1 = tic;
-            
-            
             
             % check if there is no Sources in model and find the leftmost block
             subsystems = find_system(model,'BlockType','SubSystem');
@@ -96,7 +96,7 @@ classdef SimFunc
 
             t1 = tic;
 
-
+            model = char(model);
 
             % add block and move next to connected one
             connect_handle = get_param([model,'/',connect_to], 'Handle');
@@ -166,6 +166,8 @@ classdef SimFunc
                        set_param(fault_handle, 'SnubberResistance', string(params{index,2}))
                    case 'Cs'
                        set_param(fault_handle, 'SnubberCapacitance', string(params{index,2}))
+                   case 'FaultIn'
+                        continue
                    otherwise
                        unknown = [unknown, params{index,2}]; %#ok<AGROW>
                 end
@@ -222,7 +224,10 @@ classdef SimFunc
 
             
             t1 = tic;
-            fprintf(2, '\nSTARTED COMPUTATION of %s.slx\n', model)
+            
+            if SimFunc.show_messages
+                fprintf(2, '\nSTARTED COMPUTATION of %s.slx\n', model)
+            end
             
             % get and set parameters of simulink configurations
             conf = getActiveConfigSet(model);
@@ -262,7 +267,7 @@ classdef SimFunc
         %   name [string/char] - name of Fault you want to delete
 
 
-            handle = [model,'/',name];
+            handle = [(model),'/',name];
             
             % check if connect lines exist then delete (empty lines marks 
             % as [-1 -1 -1]
@@ -325,6 +330,110 @@ classdef SimFunc
 
         end
         
+        
+        function ExportData(model, params, raw_data, file_name)
+        % ExportData Doing export data from raw_data to 'file_name', with 
+        % unique id, created from parameters of model
+        %
+        % Parameters:
+        %   model [string/char] - name of simulink model without file format
+        %   params[cell Nx2] - cell of N parameters and it's values set in
+        % model
+        %   raw_data[list of struct] - data with measured current and
+        % voltage from scopes
+        %   file_name [string/char] - full name of .mat file (name to
+        % create or already existing) to write data
+            
+            
+            % sorting rows of parameters to avoid duplicates 
+            params = sortrows(params, 1);
+            
+            % creating unique id for data
+            unique_name = model;
+            for index = 1:length(params)
+               unique_name = [unique_name, '_', char(string(params{index,2}))]; %#ok<AGROW>
+            end
+            
+            % read file if it exist
+            if isfile(file_name)
+                data = load(file_name).data;     
+            else
+                data = [];
+            end
+            
+            % write every element of data
+            for index = 1:length(raw_data)
+                
+                % add name of scope to unique id
+                unique_name_scope = [unique_name, '_', raw_data(index).blockName];
+                
+                % check if this data wasn't written already (by id)
+                try %#ok<TRYNC>
+                    if contains([data(:).id], unique_name_scope) && SimFunc.show_warnings
+                        warning('This data already saved')
+                        return
+                    end
+                end
+                
+                % idle data (before fault)
+                idle_data = struct(   'U', raw_data(index).signals(2).values(1,:), ...
+                                      'I', raw_data(index).signals(1).values(1,:), ...
+                                      'status', false, ...
+                                      'id', unique_name_scope     );
+                % fault data (while fault)
+                fault_data = struct(  'U', raw_data(index).signals(2).values(2,:), ...
+                                      'I', raw_data(index).signals(1).values(2,:), ...
+                                      'status', true, ...
+                                      'id', unique_name_scope     );
+                
+                % write data 
+                data = [data, idle_data, fault_data]; %#ok<AGROW>
+            end
+            
+            % save data into new .mat file or rewrite old
+            save(file_name, 'data')
+
+        end
+        
+        
+        function GeneratorCollector(model, parameters, file_name)
+        % GeneratorCollector is collection of functions launches to
+        % generate data
+        %
+        % Parameters:
+        %   model [string/char] - name of simulink model without file format
+        %   parameters[cell Nx2] - cell of N parameters and it's values set 
+        % in model
+        %   file_name [string/char] - full name of .mat file (name to
+        % create or already existing) to write data
+            
+            % change model name type to char to avoid errors with concatenation
+            % of names
+            model = char(model);
+            
+            % get name (connect to) of block to connect fault
+            for index = 1:length(parameters)
+               if strcmp(parameters{index,1},'FaultIn')
+                   connect_to = parameters{index,2};
+               end
+            end
+            
+            % Add Fault block 
+            fault = SimFunc.AddFault(model, 'Fault', connect_to);
+
+            % Set up parameters of Fault block
+            SimFunc.SetUpFault(fault, parameters)
+
+            % Run simulation and collect data from scopes
+
+            raw_data = SimFunc.RunSim(model);
+
+            % Save data in .mat file
+            SimFunc.ExportData(model, parameters, raw_data, file_name)
+
+            % Delete created Fault block
+            SimFunc.DeleteFault(model, 'Fault')
+        end
         
         
     end
