@@ -20,6 +20,8 @@ classdef SimFunc
             
             t1 = tic;
             
+            model = char(model);
+            
             % check if there is no Sources in model and find the leftmost block
             subsystems = find_system(model,'BlockType','SubSystem');
             if ~isempty(subsystems)
@@ -50,7 +52,7 @@ classdef SimFunc
             end
             
             
-            load_system('source')
+            load_system('models/source')
             
             % add blocks of source from 'source.slx'
             line_handle = add_block('source/Line 1', [model,'/Line'], 'MakeNameUnique','on');
@@ -266,7 +268,8 @@ classdef SimFunc
         %   model [string/char] - name of simulink model without file format
         %   name [string/char] - name of Fault you want to delete
 
-
+            model = char(model);
+        
             handle = [(model),'/',name];
             
             % check if connect lines exist then delete (empty lines marks 
@@ -344,6 +347,8 @@ classdef SimFunc
         %   file_name [string/char] - full name of .mat file (name to
         % create or already existing) to write data
             
+            
+            model = char(model);
             
             % sorting rows of parameters to avoid duplicates 
             params = sortrows(params, 1);

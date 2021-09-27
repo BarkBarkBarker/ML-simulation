@@ -6,7 +6,7 @@ close all
 file_name = 'data.mat';
 
 % number of points in range of ground and phase resistance
-N = 3;
+N = 2;
 
 % auxiliary value for displaying time 
 t_start_iteration = tic;
