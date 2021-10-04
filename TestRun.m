@@ -21,7 +21,7 @@ parameters = {  'phases', 'CG';... % common fault (A/B/C) - G, also double faul
 try 
     SimFunc.AddSource(model)     
 catch source_error
-    fprintf('Souce wasnt added because of: \n\n\t\"%s\"\n', source_error.message);
+    fprintf('Source wasnt added because of: \n\n\t\"%s\"\n', source_error.message);
 end
 
 
@@ -52,3 +52,8 @@ save_system(['models/',model])
 close_system(['models/',model])
 
 fprintf('\nTotal work time %f sec\n', toc(t_total)) 
+
+
+a = tic;
+load_system('GridN1')
+toc(a)

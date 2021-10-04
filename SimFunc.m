@@ -12,6 +12,130 @@ classdef SimFunc
     
     methods(Static)
         
+        function fault_handle = FaultInLineDecorator(model, fault_name, line_name)
+        % FaultInLine is more complicated version of AddFault. It 
+        % adding Fault to block, if it line that longer then 100m separate line
+        % into 2 parts at a random point and put fault between 
+        %
+        % Parameters:
+        %   model [string/char] - name of simulink model without file format
+        %   fault_name [string/char] - name of Fault you want to add
+        %   line_name [string/char] - name of line you want to connect 
+        %
+        % Return:
+        %   fault_handle[float] - handle to added Fault block
+        
+            % change type of model to char to avoid problems with names
+            model = char(model);
+            
+            %get handle and length of line
+            line_handle = get_param([model,'/', line_name], 'Handle');
+            line_length = str2double(get_param(line_handle, 'Length'));
+            
+            % check if length of line less than 100m, then do common AddBlock
+            if(line_length < 0.1) || ~contains(line_name, 'Line') 
+                fault_handle = SimFunc.AddFault(model, fault_name, line_name);
+            else
+                
+                % separate Line into 2 parts
+                line_left_handle = line_handle;
+                line_right_handle = add_block([model,'/', line_name], [model,'/',line_name, 'Sep2']);
+                set_param([model,'/', line_name], 'Name', [line_name, 'Sep1'])
+                set_param(line_right_handle, 'Position', get_param(line_left_handle, 'Position') + [0, 100, 0, 100]);
+                
+                % divide length of original line into 2 
+                line_separate_point = rand(1);
+                
+                set_param(line_left_handle, 'Length', num2str(line_length * line_separate_point))
+                set_param(line_right_handle, 'Length', num2str(line_length * (1 - line_separate_point)))
+                
+                
+                % get handles of blocks (connected to right side) to connect
+                line_ports = get_param(line_handle, 'PortConnectivity');
+                right_connect_handles = [];
+                
+                % 1-3 is left ports, 4-6 is right
+                for i = 4:6
+                    right_connect_handles = [right_connect_handles, line_ports(i).DstPort(1)]; %#ok<AGROW>
+                end
+                    
+                % add lines between two parts and right part with
+                % continous
+                
+                delete_line(get_param(line_handle,'LineHandles').RConn)
+
+                add_line(model, get_param(line_left_handle, 'PortHandles').RConn, get_param(line_right_handle, 'PortHandles').LConn)
+                
+                add_line(model, get_param(line_right_handle, 'PortHandles').RConn, right_connect_handles)
+                
+                % add Fault block between ends of line (to right side of
+                % left one)
+                fault_handle = SimFunc.AddFault(model, fault_name, [line_name, 'Sep1']);
+            end
+        end
+        
+        
+        function FixLineSeparation(model)
+        % FixLineSeparation searches the model for lines that been separated
+        % and connects them back (this lines should contains Sep1 and Sep2
+        % in names
+        %
+        % Parameters:
+        %   model [string/char] - name of simulink model without file format
+        
+           
+           load_system(model)
+           
+           % find subsytems with 'Sep1' and 'Sep2' in names, get it handles
+           subsystems = find_system(model,'BlockType','SubSystem');
+           for index = 1:length(subsystems)
+              if contains(subsystems{index}, 'Sep1')
+                line1_handle = get_param(subsystems{index}, 'Handle');
+              elseif contains(subsystems{index}, 'Sep2')
+                line2_handle = get_param(subsystems{index}, 'Handle');
+              end
+           end
+           
+           % warn if separated lines wasnt found
+           if ~exist('line1_handle') || ~exist('line2_handle')
+              if SimFunc.show_warnings
+                warning('Separated lines wasnt found')
+              end
+              return
+           end
+           
+           % get handles of ports from right side block to connect then
+           line_ports = get_param(line2_handle, 'PortConnectivity');
+            right_connect_handles = []; 
+
+            % 1-3 is left ports, 4-6 is right
+            for i = 4:6
+                right_connect_handles = [right_connect_handles, line_ports(i).DstPort(1)]; %#ok<AGROW>
+            end
+            
+            % change length of resulted block as sum of initial blocks
+            set_param(line1_handle, 'Length', num2str(str2double(get_param(line1_handle, 'Length'))+str2double(get_param(line2_handle, 'Length'))))
+            
+            % check if lines was connected to right part and delete them
+            if ~(get_param(line2_handle,'LineHandles').LConn == [-1 -1 -1]) %#ok<BDSCA>
+                delete_line(get_param(line2_handle,'LineHandles').LConn)
+            end
+            if ~(get_param(line2_handle,'LineHandles').RConn == [-1 -1 -1]) %#ok<BDSCA>
+                delete_line(get_param(line2_handle,'LineHandles').RConn)
+            end
+            
+            % delete right part of line
+            delete_block(line2_handle)
+            
+            % delete 'Sep' from name 
+            set_param(line1_handle, 'Name', erase(get_param(line1_handle, 'Name'), 'Sep1'))
+            
+            % return initial connection 
+            add_line(model, get_param(line1_handle, 'PortHandles').RConn, right_connect_handles)
+            
+        end
+        
+        
         function AddSource(model)
         % AddSource Adding Source to model if it wasn't there
         % (note in directory should be 'source.slx' with source blocks
@@ -60,6 +184,8 @@ classdef SimFunc
             source_zn_handle = add_block('source/Source Zn', [model,'/Source Zn']);
             ground_handle = add_block('source/Ground',[model,'/Ground'], 'MakeNameUnique','on');
             
+            close_sysyem('models/source')
+            
             % move blocks next to connected one
             set_param(line_handle, 'Position', get_param(connect_handle, 'Position') + [-120, 20, -120, -20]);
             set_param(source_pc1_handle, 'Position', get_param(line_handle, 'Position') + [-130, 0, -130, 0]);
@@ -102,7 +228,12 @@ classdef SimFunc
 
             % add block and move next to connected one
             connect_handle = get_param([model,'/',connect_to], 'Handle');
-            fault_handle = add_block('sps_lib/Power Grid Elements/Three-Phase Fault', [model,'/',name]);
+            
+            % load fault block from 'models/fault.slx' and add it
+            load_system('models/fault')
+            fault_handle = add_block('fault/Three-Phase Fault', [model,'/',name]);
+            close_system('models/fault')
+            
             set_param(fault_handle, 'Position', get_param(connect_handle, 'Position')+[200,-100,200,-100])
 
 
@@ -403,7 +534,202 @@ classdef SimFunc
         end
         
         
-        function GeneratorCollector(model, parameters, file_name)
+        function GeneratorCollector(file_name, models, combinations_fault, Ron_range, Rg_range, blocks_random, varargin)
+        % GeneratorCollector is collection of functions launches to
+        % generate data
+        %
+        % Parameters:
+        %   file_name [string/char] - full name of .mat file (name to
+        % create or already existing) to write data
+        %   models [array of string/char] - array of name of simulink model 
+        % without file format
+        %   combinations_fault [array of string] - array of combinations to
+        % fault in phases (like AG, BCG etc)
+        %   Ron_range [array of doubles] - array of values of Fault Resistance
+        %   Rg_range [array of doubles] - array of values of Ground Resistance
+        %   blocks_random [bool] - flag to use N(varargin) random blocks (True) 
+        % or compute for all blocks in model (False) 
+        %   (optional if blocks_random == True) varargin{1} [int] - number 
+        % of random blocks to compute
+            
+            
+            if blocks_random && isempty(varargin) && SimFunc.show_warnings
+               warning('You selected random blocks and didnt specified how much blocks to take, 50% of max would be taken') 
+            end
+            
+            if SimFunc.show_info_bar
+                clc
+                fprintf('Started loading of models\n')
+            end
+            
+
+            
+            % get number total of iterations 
+            if ~blocks_random
+                N_blocks = 0;
+                for model = models
+                    load_system('models/' + model)
+                    N_blocks = N_blocks + length(find_system(model,'BlockType','SubSystem'));
+                end
+                total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*N_blocks;
+            elseif ~isempty(varargin) || isinteger(varargin{1})
+                total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*length(models)*varargin{1}; 
+            end
+            
+            if SimFunc.show_info_bar
+                fprintf('\nTotal number of iterations would be %f', total_iterations)
+            end
+            
+            % flag for iterations
+            flag = 0;
+            
+            t_prev_iteration = tic;
+            
+            % run cycles 
+            for model = models
+               load_system('models/' + model)
+               
+               % try to add source to model
+               try  %#ok<TRYNC>
+                  SimFunc.AddSource(model)     
+               end
+    
+               for combination = combinations_fault
+                  for Ron = Ron_range
+                     for Rg = Rg_range
+                         
+                        % separate powergui from blocks and delete name of
+                        % model from block name
+                        subsystems = find_system(model,'BlockType','SubSystem');
+                        subsystems(:) = erase(subsystems(:), model + '/');
+                        subsystems(strcmp(subsystems, 'powergui')) = [];
+                        
+                        % random generation
+                        if blocks_random
+                            if isempty(varargin) || ~isinteger(varargin{1})
+                                N = floor(0.5*length(find_system(model,'BlockType','SubSystem')));
+                            elseif isinteger(varargin{1}) && varargin{1} > length(subsystems)
+                                N = length(subsystems);
+                            elseif isinteger(varargin{1})
+                                N = varargin{1};
+                            end
+                            
+                            for repeat = 1:N
+                                
+                                t_last_iteration=toc(t_prev_iteration);
+                                
+                                flag = flag + 1;
+                                
+                                block_name = subsystems{round(rand*N)};
+                                
+                                parameters = {  'phases', char(combination);...
+                                                'Ron', num2str(Ron);... % range=1e-9 ... 10
+                                                'Rg', num2str(Rg);... % range=1e-9 ... 10
+                                                'Rs', 1;... % adjusts to the stability of the solution 
+                                                'Cs', inf;... % adjusts to the stability of the solution 
+                                                'FaultIn', block_name  }; % block where fault happens
+                                            
+                                
+                                if SimFunc.show_info_bar
+                                    clc
+                                    fprintf('Current porgress is %g/%g\n',flag, total_iterations)
+                                    fprintf('Running in random-mode, %f blocks for model\n', N) 
+                                    fprintf('Working on %s with fault on %s with parameters:\n', model, block_name)
+                                    disp(parameters)
+
+                                    fprintf('\nPrevious step complete in %g sec \n', t_last_iteration)
+                                    
+                                end
+                                
+                                t_prev_iteration = tic;
+                                
+                                % Add Fault block 
+                                fault = SimFunc.FaultInLineDecorator(model, 'Fault', block_name);
+
+                                % Set up parameters of Fault block
+                                SimFunc.SetUpFault(fault, parameters)
+
+                                % Run simulation and collect data from scopes
+
+                                raw_data = SimFunc.RunSim(model);
+
+                                % Save data in .mat file
+                                SimFunc.ExportData(model, parameters, raw_data, file_name)
+
+                                % Delete created Fault block and separate
+                                % line
+                                SimFunc.FixLineSeparation(model)
+                                SimFunc.DeleteFault(model, 'Fault') 
+                                
+                                
+                                
+                            end
+                        else
+                            
+                            for index = 1:length(subsystems)
+                                
+                                t_last_iteration=toc(t_prev_iteration);
+                                
+                                flag = flag + 1;
+                                
+                                block_name = subsystems{index};
+                                
+                                parameters = {  'phases', char(combination);...
+                                                'Ron', num2str(Ron);... % range=1e-9 ... 10
+                                                'Rg', num2str(Rg);... % range=1e-9 ... 10
+                                                'Rs', 1;... % adjusts to the stability of the solution 
+                                                'Cs', inf;... % adjusts to the stability of the solution 
+                                                'FaultIn', block_name  }; % block where fault happens
+                                            
+                                
+                                if SimFunc.show_info_bar
+                                    clc
+                                    fprintf('Current porgress is %g/%g\n',flag, total_iterations)
+                                    fprintf('Running in non-random-mode\n') 
+                                    fprintf('Working on %s with fault on %s with parameters:\n', model, block_name)
+                                    disp(parameters)
+
+                                    fprintf('\nPrevious step complete in %f sec \n', t_last_iteration)
+                                    
+                                end            
+                                        
+                                t_prev_iteration = tic;
+                                
+                                % Add Fault block 
+                                fault = SimFunc.FaultInLineDecorator(model, 'Fault', block_name);
+
+                                % Set up parameters of Fault block
+                                SimFunc.SetUpFault(fault, parameters)
+
+                                % Run simulation and collect data from scopes
+
+                                raw_data = SimFunc.RunSim(model);
+
+                                % Save data in .mat file
+                                SimFunc.ExportData(model, parameters, raw_data, file_name)
+
+                                % Delete created Fault block and separate
+                                % line
+                                SimFunc.FixLineSeparation(model)
+                                SimFunc.DeleteFault(model, 'Fault') 
+                                
+                                
+                                
+                            end
+                        end
+                     end
+                  end
+               end
+               
+               save_system('models/' + model)
+               close_system('models/' + model)
+               
+            end
+
+        end
+        
+        
+        function GeneratorCollector_OLD(model, parameters, file_name)
         % GeneratorCollector is collection of functions launches to
         % generate data
         %
