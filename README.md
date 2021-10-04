@@ -7,6 +7,7 @@
     <br />This class got set of constant properties to control what to show in console; 
     <br />they named like show_*smth*
 - *TestRun.m* - script to run simulation with given parameters and plot graphs
+- *DataGeneratorOld.m* - old version of data generator
 - *DataGenerator.m* - script to run data generation and export it
 - *data.mat* - binary collection of data for neural network
 
