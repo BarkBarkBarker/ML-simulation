@@ -6,7 +6,7 @@ close all
 file_name = 'data.mat';
 
 % arrays to compute
-models = ["GridN1", "GridN3", "GridN2", "GridN4"];
+models = ["GridN4", "GridN3", "GridN2", "GridN1"];
 
 combinations = ["AG", "BG", "CG"];
 
@@ -14,8 +14,19 @@ Ron = logspace(-9,1,5);
 
 Rg = logspace(-9,1,5);
 
+% number of random blocks in model
 N = 20;
 
-SimFunc.GeneratorCollector(file_name, models, combinations, Ron, Rg, false); % pick all possible blocks from every model
+% number of repetitions for idle state
+N_repeat = 10;
 
-SimFunc.GeneratorCollector(file_name, models, combinations, Ron, Rg, true, N); % pick N random blocks from every model
+% calculate fault state and pick all possible blocks from every model
+%SimFunc.DataGenerator(file_name, models, 'fault', true, combinations, Ron, Rg, false); 
+
+
+% calculate idle state with permutations of power, repeated N_repeat time
+%SimFunc.DataGenerator(file_name, models, 'idle', true, N_repeat); 
+
+
+ % calculate fault state and pick N random blocks from every model
+SimFunc.DataGenerator(file_name, models, 'fault', true, combinations, Ron, Rg, true, N);
