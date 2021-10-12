@@ -10,9 +10,9 @@ models = ["GridN4", "GridN3", "GridN2", "GridN1"];
 
 combinations = ["AG", "BG", "CG"];
 
-Ron = logspace(-9,1,5);
+Ron = [5e-3, 0.1, 100, 1000, 10000];
 
-Rg = logspace(-9,1,5);
+Rg = [5e-3, 0.1, 100, 1000, 10000];
 
 % number of random blocks in model
 N = 20;
@@ -25,7 +25,7 @@ N_repeat = 10;
 
 
 % calculate idle state with permutations of power, repeated N_repeat time
-%SimFunc.DataGenerator(file_name, models, 'idle', true, N_repeat); 
+SimFunc.DataGenerator(file_name, models, 'idle', true, N_repeat); 
 
 
  % calculate fault state and pick N random blocks from every model

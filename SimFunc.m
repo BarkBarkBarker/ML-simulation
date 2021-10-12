@@ -388,8 +388,15 @@ classdef SimFunc
                
            block_ports = get_param(block_handle, 'PortConnectivity');
             
-           answer = true;
            
+           
+            if block_handle == fault_in_handle
+                answer = false;
+                return
+            end
+            
+            answer = true;
+            
             for i = 1:length(block_ports)
                 
                 % find Rconn, go through it and break
@@ -815,7 +822,7 @@ classdef SimFunc
                             end
                             
                             for repeat = 1:N
-                                
+                                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                 t_last_iteration=toc(t_prev_iteration);
                                 
                                 flag = flag + 1;
@@ -866,6 +873,8 @@ classdef SimFunc
                             end
                         else
                             for index = 1:length(subsystems)
+                                
+                                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                 
                                 t_last_iteration=toc(t_prev_iteration);
                                 
@@ -925,6 +934,8 @@ classdef SimFunc
                if strcmpi(type, 'idle')
                    
                   for repeat = 1:N_repeat
+                      
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                       
                     t_last_iteration=toc(t_prev_iteration);
                                 

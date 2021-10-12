@@ -1,0 +1,434 @@
+{
+   "context":{
+      "id":"930237071",
+      "Rmajor":{
+         "node_id":"8072826a-23ba-4558-b3cc-d08b3134df5b",
+         "innerPole":"-"
+      },
+      "Rminors":[
+         {
+            "node_id":"6666c334-0968-4852-9779-94ab5a0da3cf"
+         }
+      ],
+      "source":{
+         "id":"ffc3c4da-ebef-4d3c-9fd8-ac7cbaabe3d3",
+         "emf":10500.0
+      },
+      "feeder":{
+         "nodes":[
+            {
+               "id":"1c86ac4b-4329-4d98-848f-ab04333a62fd",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":630.0,
+                     "loadCoef":0.152,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т_КТП-389]"
+            },
+            {
+               "id":"1e499eea-fa75-49f3-9f54-fd53572c467b",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [PILLAR], in DispatcherName: [Опора-2/22_РВА-18-10кВ]"
+            },
+            {
+               "id":"243855c5-3da0-42ef-bce6-429747718161",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [BUS], in DispatcherName: [СШ КТП-389]"
+            },
+            {
+               "id":"25adf9d6-e6cb-4413-a7ee-ab907755af61",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [PILLAR], in DispatcherName: [Опора-2/18_РВА-18-10кВ]"
+            },
+            {
+               "id":"37bd90a0-755b-4cb2-bb4c-194d79a5839d",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [BUS], in DispatcherName: [СШ ЗТП-377]"
+            },
+            {
+               "id":"425bd561-1b67-4637-9f37-6d7a3bd9bd59",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":160.0,
+                     "loadCoef":0.0,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т_КТП-1303]"
+            },
+            {
+               "id":"544fba86-f147-43de-8441-b01c06f9f2b3",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":250.0,
+                     "loadCoef":0.0,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т_ТП-1060]"
+            },
+            {
+               "id":"602f01a2-14ba-4091-8aa5-fdc52511a420",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":400.0,
+                     "loadCoef":0.14,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т-2_ЗТП-377]"
+            },
+            {
+               "id":"6666c334-0968-4852-9779-94ab5a0da3cf",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [ASD], in DispatcherName: [ВВ РВА-19-10кВ]"
+            },
+            {
+               "id":"66ad9cfb-350e-4e05-9e41-6e923759565b",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [PILLAR], in DispatcherName: [Опора-1/6_РВА-18-10кВ]"
+            },
+            {
+               "id":"6e8068ca-30a6-42a5-8c8d-651bba1b4f26",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":400.0,
+                     "loadCoef":0.12,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т-1_ЗТП-1073]"
+            },
+            {
+               "id":"8072826a-23ba-4558-b3cc-d08b3134df5b",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [ASD], in DispatcherName: [ВВ РВА-18-10кВ]"
+            },
+            {
+               "id":"8492bdf5-92be-4fcb-b06c-baabd5c733fe",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [THREE_PHASE_SEPARATOR], in DispatcherName: [разъединитель ЛР-235-10кВ]"
+            },
+            {
+               "id":"851e8587-7a40-425b-990b-a30377dd77c0",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":400.0,
+                     "loadCoef":0.0,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор КТП-881]"
+            },
+            {
+               "id":"88feec11-fbd0-4a56-b7b8-5bb1483cb762",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [PILLAR], in DispatcherName: [Опора-7/3_РВА-18-10кВ]"
+            },
+            {
+               "id":"9eabf96e-d04e-48f2-b248-07de895e781d",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [BUS], in DispatcherName: [СШ ЗТП-1073]"
+            },
+            {
+               "id":"9fccb74f-b77b-40ba-be63-8349d74c2d8d",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":400.0,
+                     "loadCoef":0.14,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т-1_ЗТП-377]"
+            },
+            {
+               "id":"a51f3c4e-7866-4ff3-963c-f3eca003874b",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [BUS], in DispatcherName: [СШ ЗТП-921]"
+            },
+            {
+               "id":"d22f7eb5-46d8-47ea-b6d7-206d4ae3daf4",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":160.0,
+                     "loadCoef":0.0,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т_КТП-1374]"
+            },
+            {
+               "id":"d5274995-7abe-44f7-a19f-9a57fa090875",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":100.0,
+                     "loadCoef":0.021,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т_КТП-1342]"
+            },
+            {
+               "id":"d6035122-9a7e-435c-b2da-cc2e380a87be",
+               "load":[
+                  {
+                     "sourceVoltage":10500.0,
+                     "nominalPower":400.0,
+                     "loadCoef":0.12,
+                     "powerCoef":0.95
+                  }
+               ],
+               "comment":"Device type: [LOAD], in DispatcherName: [трансформатор Т-2_ЗТП-1073]"
+            },
+            {
+               "id":"d6ef2ae0-655f-470a-9b0e-4cfb1b56cbad",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [PILLAR], in DispatcherName: [Опора-2/17_РВА-18-10кВ]"
+            },
+            {
+               "id":"e0222fbd-1257-48af-9669-f97eb97b3efc",
+               "load":[
+                  
+               ],
+               "comment":"Device type: [THREE_PHASE_SEPARATOR], in DispatcherName: [разъединитель ЗТП-921]"
+            }
+         ],
+         "lines":[
+            {
+               "id":"-1257556428",
+               "parent_id":"88feec11-fbd0-4a56-b7b8-5bb1483cb762",
+               "child_id":"6666c334-0968-4852-9779-94ab5a0da3cf",
+               "length":0.08364534046444823,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-7/3_РВА-18-10кВ, ВВ РВА-19-10кВ]"
+            },
+            {
+               "id":"-346508084",
+               "parent_id":"25adf9d6-e6cb-4413-a7ee-ab907755af61",
+               "child_id":"544fba86-f147-43de-8441-b01c06f9f2b3",
+               "length":0.08870534404271914,
+               "wire_or_cable":"asb-10/70",
+               "dummy":"",
+               "comment":"Line connected to devices: [Опора-2/18_РВА-18-10кВ, трансформатор Т_ТП-1060]"
+            },
+            {
+               "id":"-379141262",
+               "parent_id":"1e499eea-fa75-49f3-9f54-fd53572c467b",
+               "child_id":"a51f3c4e-7866-4ff3-963c-f3eca003874b",
+               "length":0.2208630638851036,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-2/22_РВА-18-10кВ, СШ ЗТП-921]"
+            },
+            {
+               "id":"011b7135-821d-4d95-bc11-3e72dddd44ae",
+               "parent_id":"37bd90a0-755b-4cb2-bb4c-194d79a5839d",
+               "child_id":"602f01a2-14ba-4091-8aa5-fdc52511a420",
+               "length":0.005,
+               "wire_or_cable":"asb-10/240/12",
+               "dummy":"",
+               "comment":"Line connected to devices: [СШ ЗТП-377, трансформатор Т-2_ЗТП-377]"
+            },
+            {
+               "id":"1362246896",
+               "parent_id":"a51f3c4e-7866-4ff3-963c-f3eca003874b",
+               "child_id":"243855c5-3da0-42ef-bce6-429747718161",
+               "length":0.37011951163491086,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [СШ ЗТП-921, СШ КТП-389]"
+            },
+            {
+               "id":"1716516389",
+               "parent_id":"37bd90a0-755b-4cb2-bb4c-194d79a5839d",
+               "child_id":"d6ef2ae0-655f-470a-9b0e-4cfb1b56cbad",
+               "length":0.7560757048570759,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [СШ ЗТП-377, Опора-2/17_РВА-18-10кВ]"
+            },
+            {
+               "id":"1e7def22-dd71-47a8-aeb6-b820dd984e65",
+               "parent_id":"9eabf96e-d04e-48f2-b248-07de895e781d",
+               "child_id":"6e8068ca-30a6-42a5-8c8d-651bba1b4f26",
+               "length":0.005,
+               "wire_or_cable":"asb-10/240/12",
+               "dummy":"",
+               "comment":"Line connected to devices: [СШ ЗТП-1073, трансформатор Т-1_ЗТП-1073]"
+            },
+            {
+               "id":"2120786381",
+               "parent_id":"25adf9d6-e6cb-4413-a7ee-ab907755af61",
+               "child_id":"1e499eea-fa75-49f3-9f54-fd53572c467b",
+               "length":0.15879948079717496,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-2/18_РВА-18-10кВ, Опора-2/22_РВА-18-10кВ]"
+            },
+            {
+               "id":"212fda6c-5c09-4b8e-bb25-d7d47f26dcc3",
+               "parent_id":"a51f3c4e-7866-4ff3-963c-f3eca003874b",
+               "child_id":"e0222fbd-1257-48af-9669-f97eb97b3efc",
+               "length":0.005,
+               "wire_or_cable":"asb-10/240/12",
+               "dummy":"",
+               "comment":"Line connected to devices: [СШ ЗТП-921, разъединитель ЗТП-921]"
+            },
+            {
+               "id":"285053675",
+               "parent_id":"66ad9cfb-350e-4e05-9e41-6e923759565b",
+               "child_id":"37bd90a0-755b-4cb2-bb4c-194d79a5839d",
+               "length":0.3881999122773513,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-1/6_РВА-18-10кВ, СШ ЗТП-377]"
+            },
+            {
+               "id":"29ecd01e-d271-4388-90e1-f3eea1c5d3e5",
+               "parent_id":"9eabf96e-d04e-48f2-b248-07de895e781d",
+               "child_id":"d6035122-9a7e-435c-b2da-cc2e380a87be",
+               "length":0.005,
+               "wire_or_cable":"asb-10/240/12",
+               "dummy":"",
+               "comment":"Line connected to devices: [СШ ЗТП-1073, трансформатор Т-2_ЗТП-1073]"
+            },
+            {
+               "id":"2b3928e6-1e74-4724-a381-14e26628662e",
+               "parent_id":"37bd90a0-755b-4cb2-bb4c-194d79a5839d",
+               "child_id":"9fccb74f-b77b-40ba-be63-8349d74c2d8d",
+               "length":0.005,
+               "wire_or_cable":"asb-10/240/12",
+               "dummy":"",
+               "comment":"Line connected to devices: [СШ ЗТП-377, трансформатор Т-1_ЗТП-377]"
+            },
+            {
+               "id":"458366992",
+               "parent_id":"8072826a-23ba-4558-b3cc-d08b3134df5b",
+               "child_id":"66ad9cfb-350e-4e05-9e41-6e923759565b",
+               "length":0.2693217958695851,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [ВВ РВА-18-10кВ, Опора-1/6_РВА-18-10кВ]"
+            },
+            {
+               "id":"566348843",
+               "parent_id":"243855c5-3da0-42ef-bce6-429747718161",
+               "child_id":"88feec11-fbd0-4a56-b7b8-5bb1483cb762",
+               "length":0.04351158848971071,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [СШ КТП-389, Опора-7/3_РВА-18-10кВ]"
+            },
+            {
+               "id":"5fe16979-df1f-4ffc-8e8c-eea579151a4f",
+               "parent_id":"243855c5-3da0-42ef-bce6-429747718161",
+               "child_id":"1c86ac4b-4329-4d98-848f-ab04333a62fd",
+               "length":0.005,
+               "wire_or_cable":"asb-10/240/12",
+               "dummy":"",
+               "comment":"Line connected to devices: [СШ КТП-389, трансформатор Т_КТП-389]"
+            },
+            {
+               "id":"687c6ab8-3be1-480c-a391-1a50fba3e886",
+               "parent_id":"88feec11-fbd0-4a56-b7b8-5bb1483cb762",
+               "child_id":"9eabf96e-d04e-48f2-b248-07de895e781d",
+               "length":0.043768805292491844,
+               "wire_or_cable":"asb-10/50",
+               "dummy":"",
+               "comment":"Line connected to devices: [Опора-7/3_РВА-18-10кВ, СШ ЗТП-1073]"
+            },
+            {
+               "id":"867f1459-8b81-4976-9bab-74549e53d0e3",
+               "parent_id":"66ad9cfb-350e-4e05-9e41-6e923759565b",
+               "child_id":"851e8587-7a40-425b-990b-a30377dd77c0",
+               "length":6.534303161911673E-4,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-1/6_РВА-18-10кВ, трансформатор КТП-881]"
+            },
+            {
+               "id":"89d3125f-fc75-4299-8889-5174924ee4ad",
+               "parent_id":"d6ef2ae0-655f-470a-9b0e-4cfb1b56cbad",
+               "child_id":"d22f7eb5-46d8-47ea-b6d7-206d4ae3daf4",
+               "length":0.002973469643190429,
+               "wire_or_cable":"asb-10/70",
+               "dummy":"",
+               "comment":"Line connected to devices: [Опора-2/17_РВА-18-10кВ, трансформатор Т_КТП-1374]"
+            },
+            {
+               "id":"c3bd0772-1c61-4059-90cf-b754e0a17fa2",
+               "parent_id":"d6ef2ae0-655f-470a-9b0e-4cfb1b56cbad",
+               "child_id":"8492bdf5-92be-4fcb-b06c-baabd5c733fe",
+               "length":7.767328051504889E-5,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-2/17_РВА-18-10кВ, разъединитель ЛР-235-10кВ]"
+            },
+            {
+               "id":"d60e7ae4-54f0-4b2e-a601-9678671982ab",
+               "parent_id":"1e499eea-fa75-49f3-9f54-fd53572c467b",
+               "child_id":"d5274995-7abe-44f7-a19f-9a57fa090875",
+               "length":0.08829477824136218,
+               "wire_or_cable":"asb-10/70",
+               "dummy":"",
+               "comment":"Line connected to devices: [Опора-2/22_РВА-18-10кВ, трансформатор Т_КТП-
+1342]"
+            },
+            {
+               "id":"e9a22d10-c169-4cb9-b823-11c73169328c",
+               "parent_id":"d6ef2ae0-655f-470a-9b0e-4cfb1b56cbad",
+               "child_id":"25adf9d6-e6cb-4413-a7ee-ab907755af61",
+               "length":0.04717898465781128,
+               "wire_or_cable":"AC-50",
+               "supports":"P10-1",
+               "comment":"Line connected to devices: [Опора-2/17_РВА-18-10кВ, Опора-2/18_РВА-18-10кВ]"
+            },
+            {
+               "id":"f1c9c718-c36b-41ce-b023-8d4f642f603e",
+               "parent_id":"8492bdf5-92be-4fcb-b06c-baabd5c733fe",
+               "child_id":"425bd561-1b67-4637-9f37-6d7a3bd9bd59",
+               "length":0.12578431978491933,
+               "wire_or_cable":"asb-10/70",
+               "dummy":"",
+               "comment":"Line connected to devices: [разъединитель ЛР-235-10кВ, трансформатор Т_КТП-1303]"
+            }
+         ]
+      }
+   }
+}

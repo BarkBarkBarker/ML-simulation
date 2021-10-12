@@ -1,0 +1,10 @@
+x = (0:0.02:1).';
+y = cos(2*pi*x) + 0.25 * cos(6*pi*x);
+plot(x, y, 'x','LineWidth', 2);
+hold on;
+y2 = y + 0.5*(2*rand(size(y))-1);
+plot(x, y2, 'LineWidth', 2, 'Color', 'red');
+mdl = learn(x, y2, [], 0.04);
+X = (0:0.001:1).';
+Y = predict(mdl, X);
+plot(X, Y, 'LineWidth', 2, 'Color', 'green');

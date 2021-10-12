@@ -1,0 +1,253 @@
+{
+	"context": {
+		"id": "2081061813",
+		"Rmajor": {
+			"node_id": "fd61661e-6807-4638-8719-010892064a70",
+			"innerPole": "-"
+		},
+		"Rminors": [
+			{
+				"node_id": "ef7e6e5c-d6d3-47ac-94d4-f78d13d75cf1"
+			}
+		],
+		"source": {
+			"id": "a45a3173-2fd8-4e68-9d13-3ffd357ee085",
+			"emf": 10500
+		},
+		"feeder": {
+			"nodes": [
+				{
+					"id": "16dca126-63b3-4f92-9c20-3803e9ff56bb",
+					"load": [],
+					"comment": "Device type: [PILLAR], in DispatcherName: [Опора-2\/67_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "7eb2fb6e-812d-4418-9570-008c0a0de648",
+					"load": [],
+					"comment": "Device type: [PILLAR], in DispatcherName: [Опора-5\/11_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "80fd183c-8a13-4b76-ac53-a67608edf350",
+					"load": [],
+					"comment": "Device type: [PILLAR], in DispatcherName: [Опора-4\/1_Л-8-10кВ_Воробьево\nОпора-2\/44_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "89b2ca34-ce5b-423b-8d29-2a00e35aca9e",
+					"load": [
+						{
+							"sourceVoltage": 10500,
+							"nominalPower": 625,
+							"loadCoef": 0.115,
+							"powerCoef": 0.95
+						}
+					],
+					"comment": "Device type: [LOAD], in DispatcherName: [трансформатор КТП-631]"
+				},
+				{
+					"id": "8e9f1c33-c04b-4517-a4ff-40ffb7f56bc8",
+					"load": [],
+					"comment": "Device type: [BUS], in DispatcherName: [СШ ЗТП-1133]"
+				},
+				{
+					"id": "9c94a423-53f4-453c-95c7-ddd38e15afa5",
+					"load": [
+						{
+							"sourceVoltage": 10500,
+							"nominalPower": 400,
+							"loadCoef": 0.115,
+							"powerCoef": 0.95
+						}
+					],
+					"comment": "Device type: [LOAD], in DispatcherName: [трансформатор КТП-432]"
+				},
+				{
+					"id": "a4280a73-cac9-4e9e-ac57-730f7183a15f",
+					"load": [],
+					"comment": "Device type: [PILLAR], in DispatcherName: [Опора-3\/1_Л-8-10кВ_Воробьево\nОпора-2\/16_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "a458b703-f85e-429b-808a-29b4cfb34f6a",
+					"load": [
+						{
+							"sourceVoltage": 10500,
+							"nominalPower": 1000,
+							"loadCoef": 0.337,
+							"powerCoef": 0.95
+						}
+					],
+					"comment": "Device type: [LOAD], in DispatcherName: [трансформатор Т_ЗТП-1133]"
+				},
+				{
+					"id": "bf0fc43f-5c6a-4b90-b04a-ccca098dbfea",
+					"load": [],
+					"comment": "Device type: [PILLAR], in DispatcherName: [Опора-5\/22_Л-8-10кВ_Воробьево\nОпора-6\/1_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "ca8dd646-e6e9-491e-aa1c-270f27bcc6e5",
+					"load": [
+						{
+							"sourceVoltage": 10500,
+							"nominalPower": 250,
+							"loadCoef": 0.332,
+							"powerCoef": 0.95
+						}
+					],
+					"comment": "Device type: [LOAD], in DispatcherName: [трансформатор ТП-433]"
+				},
+				{
+					"id": "ef7e6e5c-d6d3-47ac-94d4-f78d13d75cf1",
+					"load": [],
+					"comment": "Device type: [ASD], in DispatcherName: [ВВ РВА-9-10кВ]"
+				},
+				{
+					"id": "f76d2194-7a2d-4450-9bbb-87da20430cc3",
+					"load": [
+						{
+							"sourceVoltage": 10500,
+							"nominalPower": 250,
+							"loadCoef": 0.257,
+							"powerCoef": 0.95
+						}
+					],
+					"comment": "Device type: [LOAD], in DispatcherName: [трансформатор ТП-634]"
+				},
+				{
+					"id": "f9a1eebd-e15b-4504-a53b-ead254503da7",
+					"load": [
+						{
+							"sourceVoltage": 10500,
+							"nominalPower": 250,
+							"loadCoef": 0.282,
+							"powerCoef": 0.95
+						}
+					],
+					"comment": "Device type: [LOAD], in DispatcherName: [трансформатор ТП-429]"
+				},
+				{
+					"id": "fd61661e-6807-4638-8719-010892064a70",
+					"load": [],
+					"comment": "Device type: [ASD], in DispatcherName: [ВВ Ячейка_Л-8-10кВ_Воробьево]"
+				}
+			],
+			"lines": [
+				{
+					"id": "-1382640622",
+					"parent_id": "80fd183c-8a13-4b76-ac53-a67608edf350",
+					"child_id": "16dca126-63b3-4f92-9c20-3803e9ff56bb",
+					"length": 1.477186904,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-4\/1_Л-8-10кВ_Воробьево\nОпора-2\/44_Л-8-10кВ_Воробьево, Опора-2\/67_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "-1573549862",
+					"parent_id": "8e9f1c33-c04b-4517-a4ff-40ffb7f56bc8",
+					"child_id": "a4280a73-cac9-4e9e-ac57-730f7183a15f",
+					"length": 0.988978263,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [СШ ЗТП-1133, Опора-3\/1_Л-8-10кВ_Воробьево\nОпора-2\/16_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "-248472701",
+					"parent_id": "a4280a73-cac9-4e9e-ac57-730f7183a15f",
+					"child_id": "89b2ca34-ce5b-423b-8d29-2a00e35aca9e",
+					"length": 0.1801521925,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-3\/1_Л-8-10кВ_Воробьево\nОпора-2\/16_Л-8-10кВ_Воробьево, трансформатор КТП-631]"
+				},
+				{
+					"id": "-993331",
+					"parent_id": "fd61661e-6807-4638-8719-010892064a70",
+					"child_id": "8e9f1c33-c04b-4517-a4ff-40ffb7f56bc8",
+					"length": 0.8919987015,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [ВВ Ячейка_Л-8-10кВ_Воробьево, СШ ЗТП-1133]"
+				},
+				{
+					"id": "121b61d0-b677-497c-8a2a-d4a5cdbd5048",
+					"parent_id": "16dca126-63b3-4f92-9c20-3803e9ff56bb",
+					"child_id": "f76d2194-7a2d-4450-9bbb-87da20430cc3",
+					"length": 0.01634970636,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-2\/67_Л-8-10кВ_Воробьево, трансформатор ТП-634]"
+				},
+				{
+					"id": "1505548179",
+					"parent_id": "7eb2fb6e-812d-4418-9570-008c0a0de648",
+					"child_id": "bf0fc43f-5c6a-4b90-b04a-ccca098dbfea",
+					"length": 0.6412600135,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-5\/11_Л-8-10кВ_Воробьево, Опора-5\/22_Л-8-10кВ_Воробьево\nОпора-6\/1_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "1631690780",
+					"parent_id": "a4280a73-cac9-4e9e-ac57-730f7183a15f",
+					"child_id": "80fd183c-8a13-4b76-ac53-a67608edf350",
+					"length": 1.720732976,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-3\/1_Л-8-10кВ_Воробьево\nОпора-2\/16_Л-8-10кВ_Воробьево, Опора-4\/1_Л-8-10кВ_Воробьево\nОпора-2\/44_Л-8-10кВ_Воробьево]"
+				},
+				{
+					"id": "1786770246",
+					"parent_id": "bf0fc43f-5c6a-4b90-b04a-ccca098dbfea",
+					"child_id": "9c94a423-53f4-453c-95c7-ddd38e15afa5",
+					"length": 0.1272012582,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-5\/22_Л-8-10кВ_Воробьево\nОпора-6\/1_Л-8-10кВ_Воробьево, трансформатор КТП-432]"
+				},
+				{
+					"id": "1851219918",
+					"parent_id": "80fd183c-8a13-4b76-ac53-a67608edf350",
+					"child_id": "f9a1eebd-e15b-4504-a53b-ead254503da7",
+					"length": 0.3267473753,
+					"wire_or_cable": "AC-35",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-4\/1_Л-8-10кВ_Воробьево\nОпора-2\/44_Л-8-10кВ_Воробьево, трансформатор ТП-429]"
+				},
+				{
+					"id": "1921878408",
+					"parent_id": "7eb2fb6e-812d-4418-9570-008c0a0de648",
+					"child_id": "ca8dd646-e6e9-491e-aa1c-270f27bcc6e5",
+					"length": 0.4618008492,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-5\/11_Л-8-10кВ_Воробьево, трансформатор ТП-433]"
+				},
+				{
+					"id": "5eaa682b-c0d1-4c29-ad0a-d3eb85026fa4",
+					"parent_id": "8e9f1c33-c04b-4517-a4ff-40ffb7f56bc8",
+					"child_id": "a458b703-f85e-429b-808a-29b4cfb34f6a",
+					"length": 0.005,
+					"wire_or_cable": "asb-10\/240\/12",
+					"dummy": "",
+					"comment": "Line connected to devices: [СШ ЗТП-1133, трансформатор Т_ЗТП-1133]"
+				},
+				{
+					"id": "74418cf8-5b73-4043-b812-f8da871132a1",
+					"parent_id": "bf0fc43f-5c6a-4b90-b04a-ccca098dbfea",
+					"child_id": "ef7e6e5c-d6d3-47ac-94d4-f78d13d75cf1",
+					"length": 0.07519116309,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-5\/22_Л-8-10кВ_Воробьево\nОпора-6\/1_Л-8-10кВ_Воробьево, ВВ РВА-9-10кВ]"
+				},
+				{
+					"id": "815418743",
+					"parent_id": "16dca126-63b3-4f92-9c20-3803e9ff56bb",
+					"child_id": "7eb2fb6e-812d-4418-9570-008c0a0de648",
+					"length": 0.3774102081,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1",
+					"comment": "Line connected to devices: [Опора-2\/67_Л-8-10кВ_Воробьево, Опора-5\/11_Л-8-10кВ_Воробьево]"
+				}
+			]
+		}
+	}
+}

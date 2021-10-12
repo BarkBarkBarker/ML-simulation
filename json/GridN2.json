@@ -1,0 +1,441 @@
+{
+	"context": {
+		"id": "F_2TPa_R2_n-R5_p",
+		"Rmajor": {
+			"node_id": "R2",
+			"innerPole": "-"
+		},
+		"Rminors": [
+			{
+				"node_id": "R5",
+				"innerPole": "+"
+			}
+		],
+		"feeder": {
+			"nodes": [
+				{
+					"id": "R2"
+				},
+				{
+					"id": "R3"
+				},
+				{
+					"id": "R5"
+				},
+				{
+					"id": "8173",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 112,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8737",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 70,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8424",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 44.8,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8551",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 44.8,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8293",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 28,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8733",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 28,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8485",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 140,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8605",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 1.12,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8287",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 140,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "8041",
+					"load": {
+						"sourceVoltage": 10000,
+						"nominalPower": 112,
+						"loadCoef": 0.23,
+						"powerCoef": 0.9,
+						"loadType": 1
+					}
+				},
+				{
+					"id": "node 22"
+				},
+				{
+					"id": "node 23"
+				},
+				{
+					"id": "node 24"
+				},
+				{
+					"id": "node 25"
+				},
+				{
+					"id": "node 26"
+				},
+				{
+					"id": "node 27"
+				},
+				{
+					"id": "node 28"
+				},
+				{
+					"id": "node 29"
+				},
+				{
+					"id": "node 30"
+				},
+				{
+					"id": "node 31"
+				},
+				{
+					"id": "node 32"
+				},
+				{
+					"id": "node 33"
+				},
+				{
+					"id": "node 34"
+				},
+				{
+					"id": "node 35"
+				},
+				{
+					"id": "node 36"
+				},
+				{
+					"id": "node 37"
+				},
+				{
+					"id": "node 38"
+				},
+				{
+					"id": "node 39"
+				},
+				{
+					"id": "node 40"
+				},
+				{
+					"id": "node 41"
+				}
+			],
+			"lines": [
+				{
+					"id": "44",
+					"parent_id": "node 22",
+					"child_id": "R3",
+					"length": 1.11,
+					"wire_or_cable": "AC-70",
+					"supports": "P10-1"
+				},
+				{
+					"id": "45",
+					"parent_id": "8173",
+					"child_id": "node 22",
+					"length": 0.03,
+					"wire_or_cable": "asb-10\/240\/12"
+				},
+				{
+					"id": "46",
+					"parent_id": "8173",
+					"child_id": "node 23",
+					"length": 0.28,
+					"wire_or_cable": "asb-10\/240\/12"
+				},
+				{
+					"id": "47",
+					"parent_id": "node 23",
+					"child_id": "node 24",
+					"length": 0.28,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "48",
+					"parent_id": "node 24",
+					"child_id": "node 25",
+					"length": 0.3,
+					"wire_or_cable": "AC-35",
+					"supports": "P10-1"
+				},
+				{
+					"id": "49",
+					"parent_id": "node 24",
+					"child_id": "node 26",
+					"length": 0.26,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "50",
+					"parent_id": "node 27",
+					"child_id": "8173",
+					"length": 0.02,
+					"wire_or_cable": "asb-10\/240\/12"
+				},
+				{
+					"id": "51",
+					"parent_id": "node 28",
+					"child_id": "node 27",
+					"length": 1.71,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "52",
+					"parent_id": "node 28",
+					"child_id": "8737",
+					"length": 0.02,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "53",
+					"parent_id": "node 29",
+					"child_id": "node 28",
+					"length": 0.02,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "54",
+					"parent_id": "node 29",
+					"child_id": "node 30",
+					"length": 1.15,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "55",
+					"parent_id": "node 30",
+					"child_id": "8424",
+					"length": 0.19,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "56",
+					"parent_id": "node 30",
+					"child_id": "node 31",
+					"length": 0.34,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "57",
+					"parent_id": "node 31",
+					"child_id": "8293",
+					"length": 0.12,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "58",
+					"parent_id": "node 31",
+					"child_id": "8551",
+					"length": 0.82,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "59",
+					"parent_id": "node 32",
+					"child_id": "node 29",
+					"length": 1.11,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "60",
+					"parent_id": "node 32",
+					"child_id": "node 33",
+					"length": 0.21,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "61",
+					"parent_id": "node 33",
+					"child_id": "node 34",
+					"length": 0.23,
+					"wire_or_cable": "asb-10\/240\/12"
+				},
+				{
+					"id": "im3",
+					"parent_id": "R5",
+					"child_id": "node 32",
+					"length": 0,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "62",
+					"parent_id": "node 35",
+					"child_id": "R5",
+					"length": 0.24,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "63",
+					"parent_id": "node 35",
+					"child_id": "8733",
+					"length": 0.02,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "64",
+					"parent_id": "8485",
+					"child_id": "node 35",
+					"length": 0.5,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "65",
+					"parent_id": "node 36",
+					"child_id": "8485",
+					"length": 0.23,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "66",
+					"parent_id": "node 36",
+					"child_id": "8605",
+					"length": 1.62,
+					"wire_or_cable": "AC-35",
+					"supports": "P10-1"
+				},
+				{
+					"id": "67",
+					"parent_id": "node 37",
+					"child_id": "node 36",
+					"length": 0.54,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "68",
+					"parent_id": "node 37",
+					"child_id": "node 38",
+					"length": 0.14,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "69",
+					"parent_id": "node 38",
+					"child_id": "8287",
+					"length": 0.15,
+					"wire_or_cable": "asb-10\/240\/12"
+				},
+				{
+					"id": "70",
+					"parent_id": "node 39",
+					"child_id": "node 37",
+					"length": 0.5,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "71",
+					"parent_id": "node 39",
+					"child_id": "8041",
+					"length": 0.17,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "72",
+					"parent_id": "node 40",
+					"child_id": "node 39",
+					"length": 0.28,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "73",
+					"parent_id": "node 41",
+					"child_id": "node 40",
+					"length": 0.01,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				},
+				{
+					"id": "74",
+					"parent_id": "R2",
+					"child_id": "node 41",
+					"length": 0.04,
+					"wire_or_cable": "AC-50",
+					"supports": "P10-1"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,23 @@
+x = -1:0.1:1;
+x = ones(length(x), 1) * x;
+x = x + 1i * x.';
+FNC = @(z)((1+abs(z).^2).^-1);
+y = FNC(2*pi*x);
+x = x(1:end).';
+y = y(1:end).';
+m = learn(x, y, @(dx)bahvalov(dx, 1e3, 1e3), 0.1);
+X = 0.05:0.1:0.95; X = X + 0.025;
+X = ones(length(X), 1) * X;
+X = X + 1i * X.';
+Y = FNC(2*pi*X);
+X = X(1:end).';
+Y = Y(1:end).';
+Yp = predict(m, X);
+figure()
+plot(abs(Yp - Y) ./ (1e-8 + abs(Y)), 'ro');
+figure();
+xx = 0.5i + (0:0.01:1).';
+plot(real(xx), FNC(2*pi*xx), 'bx');
+hold on;
+yy = predict(m, xx);
+plot(real(xx), yy, 'r');
