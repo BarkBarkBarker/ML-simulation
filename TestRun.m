@@ -36,7 +36,7 @@ SimFunc.SetUpFault(fault, parameters)
 raw_data = SimFunc.GetSimData(model, true);
 
 % Save data in .mat file
-SimFunc.ExportData(model, parameters, raw_data, 'data.mat', 'Fault')
+% SimFunc.ExportData(model, parameters, raw_data, 'data.mat', 'Fault')
 
 % Draw plots of phasors from scope#2
 
