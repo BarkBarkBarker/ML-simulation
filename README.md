@@ -2,6 +2,9 @@
 ### Project for final qualifying work of a bachelor in *SPb university* of student *Burlak Alexey*
 # Architecture of project
 
+- *Literature materials/* - folder of literature helpful for work
+- *ML Library/* - folder with machine learning library, made by Alexey Merkushev
+- *json/* - folder of .json version of models
 - *models/* - folder with simulink models, made in special converter
 - *SimFunc.m* - class-colection of main functions 
     <br />This class got set of constant properties to control what to show in console; 
@@ -10,4 +13,4 @@
 - *DataGeneratorOld.m* - old version of data generator
 - *DataGenerator.m* - script to run data generation and export it
 - *data.mat* - binary collection of data for neural network
-
+- *data_old.mat* - binary collection of data for neural network in old format
