@@ -12,7 +12,7 @@ classdef SimFunc
     
     methods(Static)
         
-        function fault_handle = FaultInLineDecorator(model, fault_name, line_name)
+        function [fault_handle, line_separate_point] = FaultInLineDecorator(model, fault_name, line_name)
         % FaultInLine is more complicated version of AddFault. It 
         % adding Fault to block, if it line that longer then 100m separate line
         % into 2 parts at a random point and put fault between 
@@ -24,29 +24,34 @@ classdef SimFunc
         %
         % Return:
         %   fault_handle[float] - handle to added Fault block
+        %   line_separate_point[float] - if >0 then point of line
+        %   separation ([0, 1]), if =(-1) then line wasn't separate
         
             % change type of model to char to avoid problems with names
             model = char(model);
             
             
             % if block is line get handle and length
-            if isfield(get_param([model,'/', line_name], 'ObjectParameters'), 'Length')
-                line_handle = get_param([model,'/', line_name], 'Handle');
+            if strcmp(get_param(strcat(model, '/', line_name), 'MaskType'),'Distributed Parameters Line')
+                line_handle = get_param(strcat(model, '/', line_name), 'Handle');
                 line_length = str2double(get_param(line_handle, 'Length'));
             else
                 fault_handle = SimFunc.AddFault(model, fault_name, line_name);
+                line_separate_point = -1;
                 return
             end
 
             % check if length of line less than 100m, then do common AddBlock
             if(line_length < 0.1) || ~contains(line_name, 'Line') 
                 fault_handle = SimFunc.AddFault(model, fault_name, line_name);
+                line_separate_point = -1;
+                return
             else
                 
                 % separate Line into 2 parts
                 line_left_handle = line_handle;
-                line_right_handle = add_block([model,'/', line_name], [model,'/',line_name, 'Sep2']);
-                set_param([model,'/', line_name], 'Name', [line_name, 'Sep1'])
+                line_right_handle = add_block(strcat(model, '/', line_name), strcat(model, '/', line_name, 'Sep2'));
+                set_param(strcat(model, '/', line_name), 'Name', strcat(line_name, 'Sep1'))
                 set_param(line_right_handle, 'Position', get_param(line_left_handle, 'Position') + [0, 100, 0, 100]);
                 
                 % divide length of original line into 2 
@@ -84,7 +89,7 @@ classdef SimFunc
                 
                 % add Fault block between ends of line (to right side of
                 % left one)
-                fault_handle = SimFunc.AddFault(model, fault_name, [line_name, 'Sep1']);
+                fault_handle = SimFunc.AddFault(model, fault_name, strcat(line_name, 'Sep1'));
             end
         end
         
@@ -322,6 +327,8 @@ classdef SimFunc
                        set_param(fault_handle, 'SnubberCapacitance', string(params{index,2}))
                    case 'FaultIn'
                         continue
+                   case 'LineSep'
+                        continue
                    otherwise
                        unknown = [unknown, params{index,2}]; %#ok<AGROW>
                 end
@@ -432,8 +439,24 @@ classdef SimFunc
         end
         
         
-        function scopes = GetSimData(model, permutate)
+        function [scopes, loads] = GetSimData(model, permutate)
+            % GetSimData running simulation with permutations of loads
+            % power (if permutate == true) and return scopes data and
+            % parameters of loads in system
+            % 
+            % Parameters
+            %    model [string] - name of model without .slx
+            %
+            %    permutate [bool] - 
+            %
+            % Return
+            %    scopes [list of struct] - data with measured current and
+            % voltage from scopes
+            %
+            %    loads [cell Nx3] - cell of values in format (load 
+            % name, load active power value, load inductive power value,)
             
+          
             t1 = tic;
             
             if SimFunc.show_messages
@@ -470,6 +493,12 @@ classdef SimFunc
                    set_param(loads{index,1}, 'ActivePower', num2str(rand_cos * power_magn))
                    set_param(loads{index,1}, 'InductivePower', num2str(sqrt(1-rand_cos^2) * power_magn))
 
+                end
+                
+            else
+                for index = 1:length(loads)
+                    loads{index, 2} = get_param(loads{index,1}, 'ActivePower');
+                    loads{index, 3} = get_param(loads{index,1}, 'InductivePower');
                 end
             end
             
@@ -565,35 +594,55 @@ classdef SimFunc
         end
         
         
-        function ExportData(model, params, raw_data, file_name, type)
+        function ExportData(model, params, raw_data, file_name, type, loads, varargin)
         % ExportData Doing export data from raw_data to 'file_name', with 
         % unique id, created from parameters of model
         %
         % Parameters:
         %   model [string/char] - name of simulink model without file format
+        %
         %   params[cell Nx2] - cell of N parameters and it's values set in
         % model
+        %
         %   raw_data[list of struct] - data with measured current and
         % voltage from scopes
+        %
         %   file_name [string/char] - full name of .mat file (name to
         % create or already existing) to write data
+        %
         %   type [bool] - type of data, 'fault' or 'idle'
+        %
+        %   loads [cell Nx3] - cell of values in format (load 
+        % name, load active power value, load inductive power value,)
+        %
+        %   varargin{1} = filter [bool] - (IF TYPE == 'fault') flag to 
+        % activate filter on faults in foreign branches
         
             model = char(model);
             
-            if strcmpi(type, 'fault')
-                % sorting rows of parameters to avoid duplicates 
-                params = sortrows(params, 1);
-
-                % creating unique id for data
-                unique_name = model;
-                for index = 1:length(params)
-                   unique_name = [unique_name, '_', char(string(params{index,2}))]; %#ok<AGROW>
-                end
-            elseif strcmpi(type, 'idle')
-                unique_name = '';
+%             if strcmpi(type, 'fault')
+%                 % sorting rows of parameters to avoid duplicates 
+%                 params = sortrows(params, 1);
+%                 idle_params = [];
+%                 % creating unique id for data
+%                 unique_name = model;
+%                 for index = 1:length(params)
+%                    unique_name = [unique_name, '_', char(string(params{index,2}))]; %#ok<AGROW>
+%                 end
+%             elseif strcmpi(type, 'idle')
+%                 unique_name = '';
+%             end
+            
+            if numel(varargin) >= 1 && ~isempty(varargin{1})
+                filter = varargin{1};
+            elseif strcmp(type, 'fault') && nvarargin >= 1 && isempty(varargin{1})
+                warning('You selected fault mode and didnt specified if filter is needed. It will be turned off')
+                filter = false;
             end
             
+            if strcmp(type, 'idle')
+                filter = false;
+            end
             
             
             % read file if it exist
@@ -606,20 +655,19 @@ classdef SimFunc
             % write every element of data
             for index = 1:length(raw_data)
                 
-                % add name of scope to unique id
-                unique_name_scope = [unique_name, '_', raw_data(index).blockName];
+%                 % add name of scope to unique id
+%                 unique_name_scope = [unique_name, '_', raw_data(index).blockName];
+%                 
+%                 % check if this data wasn't written already (by id)
+%                 try %#ok<TRYNC>
+%                     if contains([data(:).id], unique_name_scope) && ~isempty(params)
+%                         if SimFunc.show_warnings
+%                             warning('This data already saved')
+%                         end
+%                         return
+%                     end
+%                 end
                 
-                % check if this data wasn't written already (by id)
-                try %#ok<TRYNC>
-                    if contains([data(:).id], unique_name_scope) && ~isempty(params)
-                        if SimFunc.show_warnings
-                            warning('This data already saved')
-                        end
-                        return
-                    end
-                end
-                
-                % idle data (before fault)
                 
                 block_name = erase(raw_data(index).blockName, 'Scope ');
                 scope_handle = get_param(block_name, 'Handle');
@@ -638,21 +686,44 @@ classdef SimFunc
                    end
                 end
                 
-                if strcmpi(type, 'fault') && ~SimFunc.CheckFaultBranch(model, scope_handle, fault_in_handle)
-                    type_bool = true;
+                if filter
+                    if strcmpi(type, 'fault')  && ~SimFunc.CheckFaultBranch(model, scope_handle, fault_in_handle)
+                        type_bool = true;
+                    else
+                        type_bool = false;
+                    end
                 else
-                    type_bool = false;
+                    if strcmpi(type, 'fault')
+                        type_bool = true;
+                    else
+                        type_bool = false;
+                    end
                 end
                 
-                idle_data = struct(   'U', raw_data(index).signals(2).values(1,:), ...
+                if ~isempty(params)
+                    params_struct = cell2struct(params, {'name', 'value'}, 2);
+                else
+                    params_struct = struct();
+                end
+                
+                loads_struct = cell2struct(loads, {'block', 'active_power', 'inductive_power'}, 2);
+                
+                get_data = struct(    'U', raw_data(index).signals(2).values(1,:), ...
                                       'I', raw_data(index).signals(1).values(1,:), ...
+                                      'scope', raw_data(index).blockName, ...
                                       'status', type_bool, ...
-                                      'id', unique_name_scope     );
+                                      'fault_params', params_struct, ...
+                                      'loads', loads_struct);
                                                    
-                % write data                 
-                data = [data, idle_data]; %#ok<AGROW>
-                
-                
+                % write data
+                for i = 1:length(data)
+                   if isequaln(data(i).fault_params, get_data.fault_params) && isequaln(data(i).loads, get_data.loads)
+                       return
+                   end
+                end
+
+                data = [data, get_data]; %#ok<AGROW>
+
                 
             end
             
@@ -679,20 +750,24 @@ classdef SimFunc
         %
         %   varargin{1} = 
         %       1) if type == 'fault' 
-        %           combinations_fault [array of string] - array of combinations to
+        %           = combinations_fault [array of string] - array of combinations to
         % fault in phases (like AG, BCG etc)
         %       2) if type == 'idle'
-        %           N_repeat [int] - number of repeat idle generation
+        %           = N_repeat [int] - number of repeat idle generation
         %
         %   varargin{2} = Ron_range [array of doubles] - array of values of Fault Resistance
         %
         %   varargin{3} = Rg_range [array of doubles] - array of values of Ground Resistance
         %
-        %   varargin{4} = blocks_random [bool] - flag to use N(varargin) random blocks (True) 
+        %   varagrin{4} = filter [bool] - flag to use filter of faults in
+        % foreign branches or not    
+        %
+        %   varargin{5} = blocks_random [bool] - flag to use N(varargin) random blocks (True) 
         % or compute for all blocks in model (False) 
         %
-        %   varargin{5} = N [int] - number 
-        % of random blocks to compute
+        %   varargin{6} = N [int] - number of random blocks to compute
+        %
+        %   
             
             
             if strcmpi(type, 'fault')
@@ -721,15 +796,25 @@ classdef SimFunc
                 end
                 
                 if nvarargin >= 4 && ~isempty(varargin{4})
-                    blocks_random = varargin{4};
-                elseif nvarargin >= 4 && isempty(varargin{4})
+                    filter = varargin{4};
+                else
+                    filter = false;
+                end
+                
+                if nvarargin >= 5 && ~isempty(varargin{5})
+                    blocks_random = varargin{5};
+                elseif nvarargin >= 5 && isempty(varargin{5})
                     warning('You selected fault mode and didnt specified if blocks should select randomly')
                     blocks_random = true;
                 end
                 
-                if blocks_random && isempty(varargin{5}) && SimFunc.show_warnings
-                    warning('You selected random blocks and didnt specified how much blocks to take, 50% of max would be taken') 
+                if nvarargin >= 6 && ~isempty(varargin{6})
+                    N = varargin{6};
+                elseif blocks_random && SimFunc.show_warnings && nvarargin >= 6 && isempty(varargin{6})
+                    warning('You selected random blocks and didnt specified how much blocks to take, 50% of max would be taken')
+                    N = -0.1;
                 end
+                
                 
                 % count number of iterations
                 if ~blocks_random
@@ -741,7 +826,7 @@ classdef SimFunc
                     total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*N_blocks;
 
                     % check if N exist and integer
-                elseif ~isempty(varargin{5}) && (mod(varargin{5},1) == 0)
+                elseif ~isempty(N) && (mod(N,1) == 0)
                     total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*length(models)*varargin{5}; 
                 end
                 
@@ -799,12 +884,10 @@ classdef SimFunc
                         
                         % random generation
                         if blocks_random
-                            if isempty(varargin{5}) || ~(mod(varargin{5},1) == 0)
+                            if isempty(N) || ~(mod(N,1) == 0)
                                 N = floor(0.5*length(find_system(model,'BlockType','SubSystem')));
-                            elseif (mod(varargin{5},1) == 0) && varargin{5} > length(subsystems)
+                            elseif (mod(N,1) == 0) && N > length(subsystems)
                                 N = length(subsystems);
-                            elseif (mod(varargin{5},1) == 0)
-                                N = varargin{5};
                             end
                             
                             for repeat = 1:N
@@ -815,12 +898,19 @@ classdef SimFunc
                                 
                                 block_name = subsystems{ceil(rand*N)};
                                 
+                                t_prev_iteration = tic;
+                                
+                                % Add Fault block 
+                                [fault, line_sep] = SimFunc.FaultInLineDecorator(model, 'Fault', block_name);
+                                
+                                % create parameters structure
                                 parameters = {  'phases', char(combination);...
                                                 'Ron', num2str(Ron);... % range=1e-9 ... 10
                                                 'Rg', num2str(Rg);... % range=1e-9 ... 10
                                                 'Rs', 1;... % adjusts to the stability of the solution 
                                                 'Cs', inf;... % adjusts to the stability of the solution 
-                                                'FaultIn', block_name  }; % block where fault happens
+                                                'FaultIn', block_name;... % block where fault happens
+                                                'LineSep', line_sep   }; % line separation coefficient
                                             
                                 
                                 if SimFunc.show_info_bar
@@ -833,21 +923,16 @@ classdef SimFunc
                                     fprintf('\nPrevious step complete in %g sec \n', t_last_iteration)
                                     
                                 end
-                                
-                                t_prev_iteration = tic;
-                                
-                                % Add Fault block 
-                                fault = SimFunc.FaultInLineDecorator(model, 'Fault', block_name);
 
                                 % Set up parameters of Fault block
                                 SimFunc.SetUpFault(fault, parameters)
 
                                 % Run simulation and collect data from scopes
 
-                                raw_data = SimFunc.GetSimData(model, permutate);
+                                [raw_data, loads] = SimFunc.GetSimData(model, permutate);
 
                                 % Save data in .mat file
-                                SimFunc.ExportData(model, parameters, raw_data, file_name, type)
+                                SimFunc.ExportData(model, parameters, raw_data, file_name, 'fault', loads, filter)
 
                                 % Delete created Fault block and separate
                                 % line
@@ -866,15 +951,21 @@ classdef SimFunc
                                 
                                 flag = flag + 1;
                                 
+                                t_prev_iteration = tic;
+                                
                                 block_name = subsystems{index};
                                 
+                                [fault, line_sep] = SimFunc.FaultInLineDecorator(model, 'Fault', block_name);
+                                
+                                % create parameters structure
                                 parameters = {  'phases', char(combination);...
                                                 'Ron', num2str(Ron);... % range=1e-9 ... 10
                                                 'Rg', num2str(Rg);... % range=1e-9 ... 10
                                                 'Rs', 1;... % adjusts to the stability of the solution 
                                                 'Cs', inf;... % adjusts to the stability of the solution 
-                                                'FaultIn', block_name  }; % block where fault happens
-                                            
+                                                'FaultIn', block_name;... % block where fault happens
+                                                'LineSep', line_sep   }; % line separation coefficient
+                                                  
                                 
                                 if SimFunc.show_info_bar
                                     clc
@@ -887,20 +978,18 @@ classdef SimFunc
                                     
                                 end            
                                         
-                                t_prev_iteration = tic;
                                 
-                                % Add Fault block 
-                                fault = SimFunc.FaultInLineDecorator(model, 'Fault', block_name);
+                                
 
                                 % Set up parameters of Fault block
                                 SimFunc.SetUpFault(fault, parameters)
 
                                 % Run simulation and collect data from scopes
 
-                                raw_data = SimFunc.RunSim(model);
+                                [raw_data, loads] = SimFunc.GetSimData(model, permutate);
 
                                 % Save data in .mat file
-                                SimFunc.ExportData(model, parameters, raw_data, file_name)
+                                SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads, filter)
 
                                 % Delete created Fault block and separate
                                 % line
@@ -940,12 +1029,12 @@ classdef SimFunc
 
                     % Run simulation and collect data from scopes
 
-                    raw_data = SimFunc.GetSimData(model, permutate);
+                    [raw_data, loads] = SimFunc.GetSimData(model, permutate);
                     
                     parameters = [];
 
                     % Save data in .mat file
-                    SimFunc.ExportData(model, parameters, raw_data, file_name, type)
+                    SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads)
 
                   end
                   
