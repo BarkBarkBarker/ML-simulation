@@ -33,14 +33,14 @@ SimFunc.SetUpFault(fault, parameters)
 
 % Run simulation and collect data from scopes
 
-raw_data = SimFunc.RunSim(model);
+raw_data = SimFunc.GetSimData(model, true);
 
 % Save data in .mat file
-SimFunc.ExportData(model, parameters, raw_data, 'data.mat')
+SimFunc.ExportData(model, parameters, raw_data, 'data.mat', 'Fault')
 
-% Draw plots of phasors from scope#2 at t=0.5
+% Draw plots of phasors from scope#2
 
-SimFunc.DrawPhasor(raw_data(2), 0.5)
+SimFunc.DrawPhasor(raw_data(2))
 
 
 % Delete created Fault block
@@ -52,8 +52,3 @@ save_system(['models/',model])
 close_system(['models/',model])
 
 fprintf('\nTotal work time %f sec\n', toc(t_total)) 
-
-
-a = tic;
-load_system('GridN1')
-toc(a)

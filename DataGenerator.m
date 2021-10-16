@@ -10,9 +10,9 @@ models = ["GridN4", "GridN3", "GridN2", "GridN1"];
 
 combinations = ["AG", "BG", "CG"];
 
-Ron = [5e-3, 0.1, 100, 1000, 10000];
+Ron = [5e-3, 0.1, 1, 100, 1000, 10000];
 
-Rg = [5e-3, 0.1, 100, 1000, 10000];
+Rg = [5e-3, 0.1, 1, 100, 1000, 10000];
 
 % number of random blocks in model
 N = 20;

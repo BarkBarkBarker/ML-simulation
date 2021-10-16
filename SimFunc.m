@@ -441,7 +441,7 @@ classdef SimFunc
             end
             
             % try load if it wasn't called from GeneratorCollector
-            load_system(['models/' + model]) %#ok<NBRAK>
+            load_system(strcat('models/', model))
             
             % get list of loads
             loads = find_system(model,'MaskType', 'Three-Phase Series RLC Load');
@@ -529,29 +529,15 @@ classdef SimFunc
         end
 
 
-        function DrawPhasor(data, time)
+        function DrawPhasor(data)
         % Draw phasors of current and voltage in subplot in new figure
         % Parameters:
         %   data[struct] - data of measured current and voltage from scopes
-        %   time[double] - time moment to show, if in data there no such value
-        %   closest will chosen
-
-
-            % check if time moment are in data, else choose closest to it
-            if isempty(find(data.time == time, 1))
-
-                delta_time = abs(data.time - time);
-
-                index = find(delta_time == min(delta_time));
-            else
-                index = find(data.time == time);
-            end
-
 
             % separate data
-            cur = data.signals(1).values(index,:);
-            volt = data.signals(2).values(index,:);
-            time = data.time(index);
+            cur = data.signals(1).values(:);
+            volt = data.signals(2).values(:);
+            time = 0;
 
 
             % do plots
