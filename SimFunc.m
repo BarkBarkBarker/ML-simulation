@@ -439,7 +439,7 @@ classdef SimFunc
         end
         
         
-        function [scopes, loads] = GetSimData(model, permutate)
+        function [scopes, loads_set] = GetSimData(model, permutate)
             % GetSimData running simulation with permutations of loads
             % power (if permutate == true) and return scopes data and
             % parameters of loads in system
@@ -453,7 +453,7 @@ classdef SimFunc
             %    scopes [list of struct] - data with measured current and
             % voltage from scopes
             %
-            %    loads [cell Nx3] - cell of values in format (load 
+            %    loads_set [cell Nx3] - cell of values in format (load 
             % name, load active power value, load inductive power value,)
             
           
@@ -467,18 +467,18 @@ classdef SimFunc
             load_system(strcat('models/', model))
             
             % get list of loads
-            loads = find_system(model,'MaskType', 'Three-Phase Series RLC Load');
+            loads_start = find_system(model,'MaskType', 'Three-Phase Series RLC Load');
             
             if permutate
-                for index = 1:length(loads)
+                for index = 1:length(loads_start)
                
                    % define limits of random permutations
                    magnitude_range = [0.5, 1];
                    cos_range = [0.8, 1];
 
                    % write initial values to set is back in the end
-                   loads{index, 2} = get_param(loads{index,1}, 'ActivePower');
-                   loads{index, 3} = get_param(loads{index,1}, 'InductivePower');
+                   loads_start{index, 2} = get_param(loads_start{index,1}, 'ActivePower');
+                   loads_start{index, 3} = get_param(loads_start{index,1}, 'InductivePower');
 
                    % random number in range "random_range" to divide magnitude
                    rand_magn_part = magnitude_range(1) + rand*(magnitude_range(2)-magnitude_range(1));
@@ -487,18 +487,23 @@ classdef SimFunc
                    rand_cos = cos_range(1) + rand*(cos_range(2)-cos_range(1));
 
                    % get value of current random magnitude
-                   power_magn = rand_magn_part*sqrt(str2double(loads{index, 2})^2 + str2double(loads{index, 3})^2);
+                   power_magn = rand_magn_part*sqrt(str2double(loads_start{index, 2})^2 + str2double(loads_start{index, 3})^2);
 
                    % set power values according to angle and magnitude
-                   set_param(loads{index,1}, 'ActivePower', num2str(rand_cos * power_magn))
-                   set_param(loads{index,1}, 'InductivePower', num2str(sqrt(1-rand_cos^2) * power_magn))
+                   loads_set{index, 1} = loads_start{index, 1};
+                   loads_set{index, 2} = num2str(rand_cos * power_magn);
+                   loads_set{index, 3} = num2str(sqrt(1-rand_cos^2) * power_magn);
+                   
+                   set_param(loads_start{index,1}, 'ActivePower', loads_set{index, 2});
+                   set_param(loads_start{index,1}, 'InductivePower', loads_set{index, 3});
 
                 end
                 
             else
-                for index = 1:length(loads)
-                    loads{index, 2} = get_param(loads{index,1}, 'ActivePower');
-                    loads{index, 3} = get_param(loads{index,1}, 'InductivePower');
+                for index = 1:length(loads_start)
+                    loads_set{index, 1} = loads_start{index, 1};
+                    loads_set{index, 2} = get_param(loads_start{index,1}, 'ActivePower');
+                    loads_set{index, 3} = get_param(loads_start{index,1}, 'InductivePower');
                 end
             end
             
@@ -526,9 +531,9 @@ classdef SimFunc
             
             if permutate
                 % set initial values of power to loads
-                for index = 1:length(loads)    
-                   set_param(loads{index,1}, 'ActivePower', loads{index,2})
-                   set_param(loads{index,1}, 'InductivePower', loads{index,3}) 
+                for index = 1:length(loads_start)    
+                   set_param(loads_start{index,1}, 'ActivePower', loads_start{index,2})
+                   set_param(loads_start{index,1}, 'InductivePower', loads_start{index,3}) 
                 end
             end
             
@@ -716,14 +721,16 @@ classdef SimFunc
                                       'loads', loads_struct);
                                                    
                 % write data
+                save_flag = true;
                 for i = 1:length(data)
-                   if isequaln(data(i).fault_params, get_data.fault_params) && isequaln(data(i).loads, get_data.loads)
-                       return
+                   if isequaln(data(i).fault_params, get_data.fault_params) && isequaln(data(i).loads, get_data.loads) && isequal(data(i).scope, get_data.scope)
+                       save_flag = false;
                    end
                 end
-
-                data = [data, get_data]; %#ok<AGROW>
-
+                
+                if save_flag
+                    data = [data, get_data]; %#ok<AGROW>
+                end
                 
             end
             
@@ -738,8 +745,10 @@ classdef SimFunc
         % generate data
         %
         % Parameters:
-        %   file_name [string/char] - full name of .mat file (name to
-        % create or already existing) to write data
+        %   file_name [(string/char) or (array string 1x2)] - full name of .mat file (name to
+        % create or already existing) to write data; if two file names are
+        % specified, the first one will be with filtred data, second with
+        % unfiltred
         %
         %   models [array of string/char] - array of name of simulink model 
         % without file format
@@ -777,21 +786,33 @@ classdef SimFunc
                 if nvarargin >= 1 && ~isempty(varargin{1})
                     combinations_fault = varargin{1};
                 elseif nvarargin >= 1 && isempty(varargin{1})
-                    warning('You selected fault mode and didnt specified combinations of faults')
+                    
+                    if SimFunc.show_warnings
+                        warning('You selected fault mode and didnt specified combinations of faults')
+                    end
+                    
                     combinations_fault = "AG";
                 end
                 
                 if nvarargin >= 2 && ~isempty(varargin{2})
                     Ron_range = varargin{2};
                 elseif nvarargin >= 2 && isempty(varargin{2})
-                    warning('You selected fault mode and didnt specified Ron range')
+                    
+                    if SimFunc.show_warnings
+                        warning('You selected fault mode and didnt specified Ron range')
+                    end
+                    
                     Ron_range = 1;
                 end
                 
                 if nvarargin >= 3 && ~isempty(varargin{3})
                     Rg_range = varargin{3};
                 elseif nvarargin >= 3 && isempty(varargin{3})
-                    warning('You selected fault mode and didnt specified Rg range')
+                    
+                    if SimFunc.show_warnings
+                        warning('You selected fault mode and didnt specified Rg range')
+                    end
+                    
                     Rg_range = 1;
                 end
                 
@@ -799,25 +820,39 @@ classdef SimFunc
                     filter = varargin{4};
                 else
                     filter = false;
+                    if SimFunc.show_warnings
+                        warning('You didnt specified if filtration is needed, it will stay FALSE')
+                    end
                 end
                 
                 if nvarargin >= 5 && ~isempty(varargin{5})
                     blocks_random = varargin{5};
                 elseif nvarargin >= 5 && isempty(varargin{5})
-                    warning('You selected fault mode and didnt specified if blocks should select randomly')
+                    
+                    if SimFunc.show_warnings
+                        warning('You selected fault mode and didnt specified if blocks should select randomly')
+                    end
+                    
                     blocks_random = true;
                 end
                 
                 if nvarargin >= 6 && ~isempty(varargin{6})
                     N = varargin{6};
-                elseif blocks_random && SimFunc.show_warnings && nvarargin >= 6 && isempty(varargin{6})
-                    warning('You selected random blocks and didnt specified how much blocks to take, 50% of max would be taken')
+                elseif blocks_random && nvarargin == 5
+                    
+                    if SimFunc.show_warnings
+                        warning('You selected random blocks and didnt specified how much blocks to take, 50% of max would be taken')
+                    end
+                    
                     N = -0.1;
                 end
                 
                 
                 % count number of iterations
                 if ~blocks_random
+                    
+                    fprintf('Started loading of models\n')
+                    
                     N_blocks = 0;
                     for model = models
                         load_system('models/' + model)
@@ -825,9 +860,22 @@ classdef SimFunc
                     end
                     total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*N_blocks;
 
-                    % check if N exist and integer
+                % check if N exist and integer
                 elseif ~isempty(N) && (mod(N,1) == 0)
-                    total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*length(models)*varargin{5}; 
+                    total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*length(models)*N; 
+                % checi if N exist but not integer
+                elseif ~isempty(N)
+                    % then N = 50% of blocks in each model
+                    N = 0;
+                    for model = models
+                        load_system(strcat('models/', model))
+                        subsystems = find_system(model,'BlockType','SubSystem');
+                        subsystems(:) = erase(subsystems(:), model + '/');
+                        subsystems(strcmp(subsystems, 'powergui')) = [];
+                        
+                        N = N + floor(0.5*length(subsystems));
+                    end
+                    total_iterations = length(combinations_fault)*length(Ron_range)*length(Rg_range)*length(models)*N; 
                 end
                 
             end
@@ -853,7 +901,7 @@ classdef SimFunc
                 fprintf('Started loading of models\n')
             end
              
-            if SimFunc.show_info_bar
+            if SimFunc.show_info_bar && exist('total_iterations', 'var')
                 fprintf('\nTotal number of iterations would be %f', total_iterations)
             end
             
@@ -890,13 +938,18 @@ classdef SimFunc
                                 N = length(subsystems);
                             end
                             
+                            
                             for repeat = 1:N
+                                
                                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                %              Random fault
+                                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                               
                                 t_last_iteration=toc(t_prev_iteration);
                                 
                                 flag = flag + 1;
                                 
-                                block_name = subsystems{ceil(rand*N)};
+                                block_name = subsystems{ceil(rand*length(subsystems))};
                                 
                                 t_prev_iteration = tic;
                                 
@@ -932,8 +985,18 @@ classdef SimFunc
                                 [raw_data, loads] = SimFunc.GetSimData(model, permutate);
 
                                 % Save data in .mat file
-                                SimFunc.ExportData(model, parameters, raw_data, file_name, 'fault', loads, filter)
-
+                                
+                                if length(string(file_name)) == 1
+                                    SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads, filter)
+                                    
+                                elseif length(string(file_name)) == 2
+                                    SimFunc.ExportData(model, parameters, raw_data, file_name(1), type, loads, true)
+                                    SimFunc.ExportData(model, parameters, raw_data, file_name(2), type, loads, false)
+                                else
+                                    SimFunc.FixLineSeparation(model)
+                                    SimFunc.DeleteFault(model, 'Fault') 
+                                    error('File names are in wrong format, %s getted', file_name)
+                                end
                                 % Delete created Fault block and separate
                                 % line
                                 SimFunc.FixLineSeparation(model)
@@ -945,7 +1008,9 @@ classdef SimFunc
                         else
                             for index = 1:length(subsystems)
                                 
-                                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                %            Non-Random fault
+                                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                 
                                 t_last_iteration=toc(t_prev_iteration);
                                 
@@ -989,7 +1054,18 @@ classdef SimFunc
                                 [raw_data, loads] = SimFunc.GetSimData(model, permutate);
 
                                 % Save data in .mat file
-                                SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads, filter)
+                                
+                                if length(string(file_name)) == 1
+                                    SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads, filter)
+                                    
+                                elseif length(string(file_name)) == 2
+                                    SimFunc.ExportData(model, parameters, raw_data, file_name(1), type, loads, true)
+                                    SimFunc.ExportData(model, parameters, raw_data, file_name(2), type, loads, false)
+                                else
+                                    SimFunc.FixLineSeparation(model)
+                                    SimFunc.DeleteFault(model, 'Fault') 
+                                    error('File names are in wrong format, %s getted', file_name)
+                                end
 
                                 % Delete created Fault block and separate
                                 % line
@@ -1010,7 +1086,9 @@ classdef SimFunc
                    
                   for repeat = 1:N_repeat
                       
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %                        Idle
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                       
                     t_last_iteration=toc(t_prev_iteration);
                                 
@@ -1034,8 +1112,14 @@ classdef SimFunc
                     parameters = [];
 
                     % Save data in .mat file
-                    SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads)
-
+                    if length(string(file_name)) == 1
+                        SimFunc.ExportData(model, parameters, raw_data, file_name, type, loads)
+                    elseif length(string(file_name)) == 2
+                        SimFunc.ExportData(model, parameters, raw_data, file_name(1), type, loads)
+                        SimFunc.ExportData(model, parameters, raw_data, file_name(2), type, loads)
+                    else
+                        error('File names are in wrong format for idle generation, %s getted', file_name)
+                    end
                   end
                   
                end
