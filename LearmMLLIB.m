@@ -4,42 +4,37 @@ close all
 
 addpath('ML Library/core/');
 
-data_clear = load('data_unfiltered.mat').data;
-%data_filtered = load('data.mat').data;
+%data = load('data_unfiltered.mat').data;
+data = load('data.mat').data;
 
-for index = 1:length(data_clear)
+for index = 1:length(data)
     % fill matrix of input parameters to network 
-    UI(index, 1:6) = [data_clear(index).U, data_clear(index).I]; %#ok<SAGROW>
+    UI(index, 1:6) = [data(index).U, data(index).I]; %#ok<SAGROW>
 end
 
 % vector of answers
-status = double([data_clear(:).status]);
+status = double([data(:).status]);
 
 % proportion for train_dataset/total_dataset
-prop = 0.8:0.01:0.99;
+prop = 0.9;
 mse = [];
-for p = prop
 
-    % array of mean squared error for each prop
-    mse = [mse, calculate(p, UI, status)];
+[mse, model] = calculate(prop, UI, status);
 
-end
 
-plot(prop, mse)
-
-function mse = calculate(train_proportion, UI, status)
-    % Auxillary function to do learning and predict of neural network
-    %
-    % Parameters:
-    %   train_proportion [float] - part of total dataset, that will uset to train
-    %
-    %   UI [array of floats] - input parameters of neural network (voltage
-    % and current
-    %
-    %   status [vector of floats/bool] - answers for input parameters
-    %
-    % Return:
-    %   mse [float] - mean squared error for prediction
+function [mse, model] = calculate(train_proportion, UI, status)
+% Auxillary function to do learning and predict of neural network
+%
+% Parameters:
+%   train_proportion [float] - part of total dataset, that will uset to train
+%
+%   UI [array of floats] - input parameters of neural network (voltage
+% and current
+%
+%   status [vector of floats/bool] - answers for input parameters
+%
+% Return:
+%   mse [float] - mean squared error for prediction
     
     % index permutations
     shuffle = randperm(length(UI));
@@ -71,5 +66,9 @@ function mse = calculate(train_proportion, UI, status)
     mse = mean(result_error.^2);
 
     fprintf('MSE is %f\n', mse)
+    answers = abs(round(result_error));
+    
+    fprintf('Accuracy is %f%%\n', length(answers(answers>0))/length(result))
+    
 end
 
