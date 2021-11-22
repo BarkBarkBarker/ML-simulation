@@ -16,13 +16,18 @@ end
 status = double([data(:).status]);
 
 % proportion for train_dataset/total_dataset
-prop = 0.9;
-mse = [];
+props = 0.59:0.1:0.99;
+accuracys = [];
 
-[mse, model] = calculate(prop, UI, status);
+for prop = props
+    [accuracy, model] = calculate(prop, UI, status);
+    accuracys = [accuracys, accuracy];
+end
+plot(props, accuracys)
+xlabel('Dataset part taken')
+ylabel('Error[%]')
 
-
-function [mse, model] = calculate(train_proportion, UI, status)
+function [accuracy, model] = calculate(train_proportion, UI, status)
 % Auxillary function to do learning and predict of neural network
 %
 % Parameters:
@@ -54,21 +59,25 @@ function [mse, model] = calculate(train_proportion, UI, status)
     model = learn(train_UI, train_status);
     
     % do prediction
-    result = predict(model, test_UI);
+    %result = predict(model, test_UI);
+    result = round(predict(model, test_UI));
     
     % get difference in prediction and real answers
-    result_error = test_status-result;
+    result_error = abs(test_status-result);
 
 %     plot(result_error)
 %     xlabel('Index number')
 %     ylabel('Error')
     
-    mse = mean(result_error.^2);
+    accuracy = length(result_error(result_error>0))/length(result)*100;
+    diff = test_status-result;
+    fprintf('False activation take %g%%\n',length(diff(diff==1))/length(diff)*100)
+    fprintf('Non-triggering take %g%%\n',length(diff(diff==-1))/length(diff)*100)
 
-    fprintf('MSE is %f\n', mse)
-    answers = abs(round(result_error));
-    
-    fprintf('Accuracy is %f%%\n', length(answers(answers>0))/length(result))
+%     fprintf('MSE is %f\n', mse)
+%     answers = abs(round(result_error));
+%     
+%     fprintf('Accuracy is %f%%\n', length(answers(answers>0))/length(result))
     
 end
 

@@ -10,14 +10,15 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 file_name = "data.mat"; % name of file to export data
-models = ["GridN4", "GridN3", "GridN2", "GridN1"]; 
+%models = ["Test1_1","Test1_2","Test1_3","Test2_1","Test2_2",]; 
+models = "Test1_1";
 combinations = ["AG", "BG", "CG"]; % combinations of phases to fault 
-Ron = [5e-3, 0.1, 10, 10000]; % fault resitance
-Rg = [5e-3, 0.1, 10, 10000]; % ground resitance
+Ron = [5e-3, 1, 10000]; % fault resitance
+Rg = [5e-3, 1, 10000]; % ground resitance
 blocks_random = true; % choose random blocks for fault
-N = 15; % number of random blocks to fault in model
+N = 1; % number of random blocks to fault in model
 permutate = true; % permutations of load power
-N_repeat = 50; % number of repetitions for idle state
+N_repeat = 300; % number of repetitions for idle state
 filter = true; % do filtration of foreign faults 
 
 
@@ -28,10 +29,13 @@ filter = true; % do filtration of foreign faults
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % calculate idle state with permutations of power, repeated N_repeat time
+% for models = ["Test2_1","Test2_2",]
+%     file_name = [strcat(models, ".mat"), strcat(models, "_unfiltered.mat")];
+%     SimFunc.DataGenerator(file_name, models, 'idle', permutate, N_repeat); 
+% end
+%file_name = ["data.mat", "data_unfiltered.mat"];
+%N_repeat = 500;
 
-%  file_name = ["data.mat", "data_unfiltered.mat"];
-%  N_repeat = 500;
-%  SimFunc.DataGenerator(file_name, models, 'idle', permutate, N_repeat); 
 
 
 
@@ -81,13 +85,15 @@ filter = true; % do filtration of foreign faults
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % calculate fault state if selective protection isn't needed
-
+for models = ["Test1_1","Test1_2","Test1_3","Test2_1","Test2_2"] 
+    
 file_name = ["data.mat", "data_unfiltered.mat"];
+file_name = [strcat(models, ".mat"), strcat(models, "_unfiltered.mat")];
 filter = false; % if 2 files specified doesn't matter
-N = 15;
+N = 10;
 SimFunc.DataGenerator(file_name, models, 'fault', permutate, combinations, Ron, Rg, filter, blocks_random, N);
 
-
+end
 
 
 
