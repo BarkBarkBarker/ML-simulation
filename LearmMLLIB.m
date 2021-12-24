@@ -5,7 +5,7 @@ close all
 addpath('ML Library/core/');
 
 %data = load('data_unfiltered.mat').data;
-data = load('data.mat').data;
+data = load('data/data.mat').data;
 
 for index = 1:length(data)
     % fill matrix of input parameters to network 

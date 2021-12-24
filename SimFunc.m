@@ -9,6 +9,7 @@ classdef SimFunc
         show_messages = false;
         show_info_bar = true;
         progress_bar_length = 40;
+        training_method = 'trainlm'; %alternative 'trainbr'
     end
     
     methods(Static)
@@ -993,7 +994,7 @@ classdef SimFunc
                                         parameters = {  'phases', char(combination);...
                                             'Ron', num2str(Ron);... % range=1e-9 ... 10
                                             'Rg', num2str(Rg);... % range=1e-9 ... 10
-                                            'Rs', 1;... % adjusts to the stability of the solution
+                                            'Rs', inf;... % adjusts to the stability of the solution
                                             'Cs', inf;... % adjusts to the stability of the solution
                                             'FaultIn', block_name;... % block where fault happens
                                             'LineSep', line_sep   }; % line separation coefficient
@@ -1070,7 +1071,7 @@ classdef SimFunc
                                         parameters = {  'phases', char(combination);...
                                             'Ron', num2str(Ron);... % range=1e-9 ... 10
                                             'Rg', num2str(Rg);... % range=1e-9 ... 10
-                                            'Rs', 1;... % adjusts to the stability of the solution
+                                            'Rs', inf;... % adjusts to the stability of the solution
                                             'Cs', inf;... % adjusts to the stability of the solution
                                             'FaultIn', block_name;... % block where fault happens
                                             'LineSep', line_sep   }; % line separation coefficient
@@ -1238,6 +1239,217 @@ classdef SimFunc
                 
             end
             
+        end
+        
+        
+        function PlotData(data, output)
+            diff = output - [data(:).status];
+            hold on
+            plot(diff)
+            
+            prev_index = 0;
+            for index = 2:length(data)
+                if ~(string(data(index).scope(1:6)) == string(data(index-1).scope(1:6)))
+                    rectangle('Position', [prev_index, -2, index-prev_index, 4], 'FaceColor',[rand rand rand 0.1])
+                    prev_index = index;
+                end
+            end
+            rectangle('Position', [prev_index, -2, length(data)-prev_index, 4], 'FaceColor',[rand rand rand 0.1])
+        end
+        
+        
+        function [error_net, net] = LearnDLT(n_layers, data_name, decrease, varargin)
+            % LearnDLT create neural net, do training on data and calculate
+            % errors
+            %
+            % Parameters:
+            %   n_layers[int/array of ints] - numbers of neurons if layers,
+            % number of layers = length of n_layers
+            %
+            %   data_name[string/char] - name of .mat file with data to 
+            % train on, placed in folder "data/"
+            %
+            %   decrease[bool] - flag to do decrease of variables (by angle
+            % shift)
+            %
+            %   varargin{1} = data_sep[string/char] - name of model, that
+            % should be separated from training data
+            %
+            %   varargin{2} = sep_test[bool] - flag to do test of net on
+            % separated data, result is saving in error_net.onsep
+            %
+            % Return:
+            %   error_net[struct] - errors in percents, that net have; have
+            %   fields: 
+            %       .self - total error on training data
+            %       .noncritical - error of false activation
+            %       .critical - error on non-triggering on faults
+            %       .onsep - error on separated data (for test on unknown data)
+            
+            
+            % parse varargin
+            nvarargin = numel(varargin);
+            
+            if nvarargin >= 1 && ~isempty(varargin{1})
+                data_sep = varargin{1};
+            else
+                data_sep = '______';
+            end
+            if nvarargin >= 2 && ~isempty(varargin{2})
+                sep_test = varargin{2};
+            else
+                sep_test = false;
+            end
+            
+            % load data
+            data = load(strcat('data/', data_name)).data;
+            
+            % separate data related to SEP model and do format of data into
+            % UI array and status array
+            
+            UI_SEP = [];
+            UI = [];
+            status_SEP = [];
+            status = [];
+            models = '';
+            data_ = [];
+            
+            if decrease
+               for index = 1:length(data)
+                   vectors = [data(index).U, data(index).I] * exp(-1i*angle(data(index).U(1)));
+                   data_(end+1, 1:11) = [real(vectors(1:6)), imag(vectors(2:6))];
+                   status(end+1) = data(index).status;
+                   
+               end
+
+               status = status';
+            else   
+               for index = 1:length(data)
+                if contains(data(index).scope, data_sep)
+                    UI_SEP(end+1, 1:6) = [data(index).U, data(index).I];
+                    status_SEP(end+1) = data(index).status;
+                else
+                    UI(end+1, 1:6) = [data(index).U, data(index).I];
+                    status(end+1) = data(index).status;
+                    a = data(index).scope(1:6);
+                    if ~contains(models, a)
+                        % names of remaining models in data_
+                        models = strcat(models, a);
+                    end
+                end
+               end
+                
+                data_SEP = [real(UI_SEP), imag(UI_SEP)];
+                data_ = [real(UI), imag(UI)];
+                status = status';
+                status_SEP = status_SEP';
+            end
+
+
+            % get network with sigmoid activation
+            net = feedforwardnet(n_layers);
+            
+            %training method set in SimFunc parameters
+            net.trainFcn = SimFunc.training_method;
+            
+
+            % parameters of dividing dataset
+            net.divideFcn = 'dividerand';
+            net.divideMode = 'sample'; 
+            net.divideParam.trainRatio = 70/100;
+            net.divideParam.valRatio = 15/100;
+            net.divideParam.testRatio = 15/100;
+
+            % loss function
+            net.performFcn = 'mse';
+
+            %train
+            [net,tr] = train(net, data_', status');
+
+            % count error percentage and write in error_net
+            output = round(net(data_'));
+            diff = output - status';
+            diff_abs = abs(diff);
+            
+            error_net = struct;
+            error_net.self = 100*length(diff_abs(diff_abs>0))/length(data);
+            error_net.noncritical = length(diff(diff>0))/length(diff)*100;
+            error_net.critical = length(diff(diff<0))/length(diff)*100;
+            
+            
+            if sep_test
+                output = round(net(data_SEP'));
+                diff = abs(output - status_SEP');
+                error_net.onsep = 100*length(diff(diff>0))/length(data);
+            end
+
+        end
+        
+        
+        function plotSection(net, data)
+            UI = [];
+            status = [];
+            models = [];
+            limits = [];
+            idle_limits=[];
+            
+            prev_name = '';
+            for index = 1:length(data)
+                    UI(end+1, 1:6) = [data(index).U, data(index).I];
+                    status(end+1) = data(index).status;
+                    for i = 1:length(data(index).scope)
+                        if strcmp(data(index).scope(i), '/')
+                            name = string(data(index).scope(1:i-1));
+                            break
+                        end
+                    end
+                    
+                    try
+                    if ((index == 1) && (length(data(index).fault_params) == 1)) || ((index == length(data)) && (length(data(index).fault_params) == 1)) || (length(data(index).fault_params) ~= (length(data(index+1).fault_params))) 
+                        idle_limits = [idle_limits, index];
+                    end
+                    
+                    end
+                    if ~strcmp(name, prev_name)
+                        models = [models, name];
+                        limits = [limits, index];
+                    end
+                    prev_name = name;
+            end
+            idle_limits
+            status = status;
+            data_ = [real(UI), imag(UI)]';
+            
+            output = round(net(data_));
+            diff = output - status;
+            
+            figure
+            hold on
+            
+            for i = 1:2:length(idle_limits)
+                color = [rand rand rand 0.1];
+                rectangle('Position',[idle_limits(i),-2,idle_limits(i+1)-idle_limits(i),2],'FaceColor',color)
+                idle = line(NaN,NaN,'LineWidth',2,'LineStyle','-','Color',color);
+                models = ['Idle', models];
+            end
+            
+            for i = 2:length(limits)
+                color = [rand rand rand 0.1];
+                rectangle('Position',[limits(i-1),0,limits(i)-limits(i-1),2],'FaceColor',color)
+                line(NaN,NaN,'LineWidth',2,'LineStyle','-','Color',color);
+            end
+            
+            color = [rand rand rand 0.1];
+            rectangle('Position',[limits(end),0,length(data)-limits(end),2],'FaceColor',color)
+            line(NaN,NaN,'LineWidth',2,'LineStyle','-','Color',color);
+            
+            legend([models,' '])
+            
+            
+            
+            plot(diff)
+            ylim([-2,2])
+
         end
         
         
